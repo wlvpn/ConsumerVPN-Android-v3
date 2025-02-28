@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "com.wlvpn.consumervpn.data";
+option java_multiple_files = true;
+
+// See more about this schema syntax in the following link
+// https://developers.google.com/protocol-buffers/docs/proto3
+message IKEv2SettingsProto {
+
+  bool allowLan = 1;
+}

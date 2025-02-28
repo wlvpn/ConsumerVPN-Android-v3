@@ -1,0 +1,12 @@
+android {
+    lintOptions {
+        disable 'GradleDependency'
+
+        xmlReport = false
+
+        checkTestSources false
+        ignoreTestSources true
+
+        lintConfig rootProject.file('config/quality/lint/lint-config.xml')
+    }
+}

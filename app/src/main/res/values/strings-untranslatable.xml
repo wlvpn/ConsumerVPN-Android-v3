@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="settings_screen_label_openvpn">OpenVPN</string>
+    <string name="settings_screen_label_ikev2">IKEv2</string>
+    <string name="settings_screen_label_wireguard">WireGuard®</string>
+
+
+    <string name="settings_screen_label_tcp">TCP</string>¬
+    <string name="settings_screen_label_udp">UDP</string>¬
+</resources>

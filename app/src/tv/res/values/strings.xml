@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="generic_button_close">Close</string>
+
+    <!-- login screen -->
+    <string name="login_screen_validation_invalid_credentials">
+        Incorrect credentials. Please try again
+    </string>
+
+    <string name="forgot_password_screen_title">Forgot Password</string>
+    <string name="forgot_password_screen_label_description">
+        Visit the ConsumerVPN website from a browser to reset your password
+    </string>
+    <string name="forgot_password_screen_qr_code_content_description">QR code</string>
+
+    <!--locations screen -->
+    <string name="locations_screen_label_title">Locations</string>
+    <string name="locations_screen_recommended_title">Recommended</string>
+    <string name="locations_screen_fastest_label_title">Best\nAvailable</string>
+    <string name="locations_screen_cities_label_title">Cities</string>
+    <string name="locations_screen_countries_label_title">Countries</string>
+
+    <!-- about us screen -->
+    <string name="about_us_screen_title">About ConsumerVPN</string>
+    <string name="about_us_screen_label_description">
+        Visit the ConsumerVPN website from a browser to learn more about us
+    </string>
+    <string name="about_us_link" translatable="false">https://www.wlvpn.com/</string>
+    <string name="about_us_screen_qr_code_content_description">QR code</string>
+
+</resources>

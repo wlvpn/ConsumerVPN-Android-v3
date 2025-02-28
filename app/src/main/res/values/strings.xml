@@ -1,0 +1,130 @@
+<resources>
+    <string name="app_name">ConsumerVPN</string>
+    <string name="manifest_special_use_permission">This foreground service is used as an intermediary to launch the VPN. The service monitors the user\'s internet connection status and notifies them if there\'s an issue before triggering the VPN connection.</string>
+
+
+    <string name="generic_button_cancel">Cancel</string>
+    <!-- Splash Screen -->
+    <string name="splash_label_migration_error">Authentication expired, please login again.</string>
+    <!-- Login Screen -->
+    <string name="login_screen_title">@string/app_name</string>
+    <string name="login_screen_button_login">Login</string>
+    <string name="login_screen_password_hint">Password</string>
+    <string name="login_screen_username_hint">Username or Email</string>
+    <string name="login_screen_forgot_password">Forgot password?</string>
+    <string name="login_screen_no_account">Don\'t have an account?</string>
+    <string name="login_screen_sign_up">Sign up</string>
+    <string name="error_links_not_supported">Opening web links is not supported on this device.</string>
+
+    <!-- Login Screen Validations -->
+    <string name="login_screen_validation_password_empty">The password can\'t be blank</string>
+    <string name="login_screen_validation_username_empty">The username can\'t be blank</string>
+    <string name="login_screen_validation_invalid_credentials">The credentials are invalid</string>
+    <string name="login_screen_validation_unable_to_login">Unable to login</string>
+    <string name="login_screen_validation_too_many_attempts">Too many attempts</string>
+
+
+    <!-- Common Errors -->
+    <string name="invalid_vpn_sdk_api_config_error">The Vpn Sdk Api config is invalid</string>
+    <string name="not_logged_in_error">You are not logged in</string>
+    <string name="service_error">A service error occurred</string>
+    <string name="not_connected_error">You are not connected</string>
+
+    <!-- Bottom Navigation Items -->
+    <string name="bottom_navigation_item_home">Home</string>
+    <string name="bottom_navigation_item_settings">Settings</string>
+    <string name="bottom_navigation_item_locations">Locations</string>
+
+
+
+    <!-- Notifications -->
+    <string name="notification_channel_label_name">Vpn notification</string>
+    <string name="notification_channel_label_description">Shows the notification connectivity state</string>
+    <string name="notification_revoked_label_title">VPN permission revoked</string>
+    <string name="notification_vpn_label_title_starting">Starting VPN</string>
+    <string name="notification_vpn_label_title_connecting">Connecting…</string>
+    <string name="notification_vpn_label_title_connected">Connected to VPN</string>
+    <string name="notification_vpn_label_title_connected_server">Connected to %s</string>
+
+    <!--Settings screen-->
+    <string name="settings_screen_label_title">Settings</string>">
+    <string name="settings_error_preparing_threat_protection_label">Error preparing threat protection.</string>
+    <string name="settings_screen_label_auto_connect_category">Startup</string>
+    <string name="settings_screen_label_connection_category">Connection</string>
+    <string name="settings_screen_label_general_category">General</string>
+
+
+    <string name="settings_screen_label_auto_connect_title">Connect at Startup</string>
+    <string name="settings_screen_label_vpn_protocol_title">VPN Protocol</string>
+    <string name="settings_screen_label_scramble_title">Scramble</string>
+    <string name="settings_screen_label_scramble_description">Adds obfuscation, allowing it to bypass network traffic sensors which aim to detect usage of a VPN and block it.</string>
+    <string name="settings_screen_label_protocol_title">Protocol</string>
+    <string name="settings_screen_label_port_title">Port</string>
+    <string name="settings_screen_label_support_title">Contact Support</string>
+    <string name="settings_screen_label_terms_of_service">Terms of Service</string>
+    <string name="settings_screen_label_privacy_policy">Privacy Policy</string>
+    <string name="settings_screen_label_logout_title">Log Out</string>
+    <string name="settings_screen_label_kill_switch_title">Android Kill Switch</string>
+    <string name="settings_screen_label_kill_switch_description">Enable your system to block internet connections when the VPN is not active.</string>
+    <string name="settings_screen_label_startup_do_not">Do not automatically connect</string>
+    <string name="settings_screen_label_startup_last_server">Connect to last connected server</string>
+    <string name="settings_screen_label_startup_fastest">Connect to fastest server</string>
+    <string name="settings_screen_label_override_mtu_title">Reset MTU Size for mobile networks</string>
+    <string name="settings_screen_label_allow_lan_title">LAN Access</string>
+    <string name="settings_screen_label_threat_protection_title">Threat Protection</string>
+    <string name="settings_screen_label_allow_lan_description">Allow local networks to be routed outside the VPN.</string>
+    <string name="settings_screen_label_override_mtu_description">Recommended only if there are problems reaching websites under a mobile network.</string>
+    <string name="settings_screen_label_threat_protection_description">Block ads, trackers, and malicious websites when the VPN is connected</string>
+    <string name="settings_screen_label_open_vpn_settings">Error: Unable to launch. Please open Settings manually.</string>
+
+    <!-- Locations Screen -->
+    <string name="locations_screen_label_fastest_available">Fastest Available</string>
+    <plurals name="locations_screen_label_cities_number">
+        <item quantity="one">%d City</item>
+        <item quantity="other">%d Cities</item>
+    </plurals>
+    <string name="locations_screen_label_title">Locations</string>
+    <string name="locations_screen_sort_menu_country">Country</string>
+    <string name="locations_screen_sort_menu_city">City</string>
+
+    <!-- Kill switch dialog -->
+    <string name="kill_switch_dialog_label_title">Enable OS kill switch</string>
+    <string name="kill_switch_dialog_label_message">
+        \u2022 Navigate to your device settings\n\u2022 Select \"Connections\" or \"Network &amp; internet\"
+        \n\u2022 Go to \"Advanced\" or \"More connection settings\"
+        \n\u2022 Select VPN
+        \n\u2022 Tap the cog next to ConsumerVPN\n\u2022 Enable both \"Always-on VPN\" and \"Block connections without VPN\"
+    </string>
+    <string name="kill_switch_dialog_button_take_me_there">Take me there</string>
+
+    <!-- Logout dialog -->
+    <string name="logout_dialog_label_title">Log out</string>
+    <string name="logout_dialog_label_message">
+        Are you sure would you like to log out?
+    </string>
+    <string name="logout_dialog_button_logout">Logout</string>
+
+    <!-- Home screen -->
+    <string name="home_screen_connection_error_label">Error connecting to the VPN, please try again later</string>
+    <string name="home_screen_no_network_error_label">Please review your internet connection.</string>
+    <string name="home_screen_public_ip_label">Public IP</string>
+    <string name="home_screen_loading_ip_label">Loading…</string>
+    <string name="home_screen_visible_location_label">Visible location</string>
+    <string name="home_screen_disconnect_button_label">DISCONNECT</string>
+    <string name="home_screen_location_selected_label">Location selected</string>
+    <string name="home_screen_connect_button_label">CONNECT</string>
+    <string name="home_screen_connecting_progress_label">Connecting</string>
+    <string name="home_screen_best_available_in_label">Best Available in %1$s</string>
+    <string name="home_screen_best_available_label">Best Available</string>
+
+    <!-- Settings -->
+    <string name="settings_screen_loading_label">Loading</string>
+    <string name="settings_screen_startup_dialog_title">Choose how to Connect at Startup</string>
+    <string name="settings_screen_vpn_protocol_dialog_title">Choose a VPN Protocol</string>
+    <string name="settings_screen_port_dialog_title">Choose a OpenVPN Port</string>
+    <string name="settings_screen_internet_protocol_dialog_title">Choose a Internet Protocol</string>
+
+    <!-- Accessibility -->
+    <string name="accessibility_password_hide">Hide password</string>
+    <string name="accessibility_password_show">Show password</string>
+</resources>

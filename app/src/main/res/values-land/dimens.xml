@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- region Home -->
+    <!-- Connection Tab -->
+    <dimen name="home_connection_informative_max_width">450dp</dimen>
+</resources>

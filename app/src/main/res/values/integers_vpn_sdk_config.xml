@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notifications -->
+    <integer name="revoked_notification_id">9933</integer>
+    <integer name="vpn_notification_id">3399</integer>
+</resources>

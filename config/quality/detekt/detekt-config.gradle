@@ -1,0 +1,22 @@
+detekt {
+
+    config = rootProject.files('config/quality/detekt/detekt-config.yml')
+
+    basePath = rootDir.toString()
+}
+
+tasks.named("detekt").configure {
+    reports {
+        html.required.set(true)
+        md.required.set(true)
+
+        xml.required.set(false)
+        txt.required.set(false)
+        sarif.required.set(false)
+
+        custom {
+            reportId = "DetektGitlabReport"
+            destination = file("$buildDir/reports/detekt/gitlab.json")
+        }
+    }
+}

@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option java_package = "com.wlvpn.consumervpn.data";
+option java_multiple_files = true;
+
+// See more about this schema syntax in the following link
+// https://developers.google.com/protocol-buffers/docs/proto3
+message ConnectionSettingsProto {
+
+  // In proto 3, the default value for an enum is the field
+  // with 0 value
+  enum ProtocolProto{
+    WIREGAURD = 0;
+    IKEV2 = 1;
+    OPENVPN = 2;
+  }
+
+enum StartupProto {
+    NONE = 0;
+    FASTEST = 1;
+    LAST_SERVER = 2;
+}
+
+  message CountryTargetProto{
+    string code = 1;
+  }
+
+  message CityTargetProto{
+    CountryTargetProto country = 1;
+    string name = 2;
+  }
+
+  message ServerTargetProto{
+    CityTargetProto city = 1;
+    string name = 2;
+  }
+
+  message FastestTargetProto{
+    // No-op
+  }
+
+  ProtocolProto selectedProtocol = 1;
+  StartupProto startupConnectOption = 2;
+
+  oneof selectedTarget {
+    CountryTargetProto country = 3;
+    CityTargetProto city = 4;
+    ServerTargetProto server = 5;
+    FastestTargetProto fastest = 6;
+  }
+
+  bool threatProtection = 7;
+
+}
