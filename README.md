@@ -18,6 +18,7 @@ new VPN applications for Android platforms.
     - [Prerequisites](#prerequisites)
     - [OS Requirements](#os-requirements)
     - [VPN SDK Keys Setup](#vpn-sdk-keys-setup)
+    - [Package Cloud keys setup](#package-cloud-keys-setup)
     - [Customizable URLs](#customizable-urls)
   - [Building The App](#building-the-app)
     - [BuildTypes](#buildtypes)
@@ -105,6 +106,15 @@ All VPN SDK keys are available at `strings_vpn_sdk_config.xml`, those should be 
 2. auth_suffix - Suffix of the account, normally used for VPN authentication (if no auth_suffix was provided, use account_name).
 3. api_key - Key that grants access to the specific account.
 4. ip_geo_url - URL for the IPGeo endpoint associated with the account.
+
+### Package Cloud keys setup
+
+To download the necessary dependencies for compiling the app, you need to set up the Package Cloud keys.
+
+1. Open the [gradle.properties](gradle.properties) file located in the root of the project.
+2. Add a new property named `packagecloud_vpn_token` and set it to the provided key.
+3. Alternatively, uncomment the existing property and assign the key.
+4. Sync the project. You should now be able to download the dependencies.
 
 ### Customizable URLs
 The client must provide

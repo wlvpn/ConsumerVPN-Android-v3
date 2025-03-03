@@ -1,7 +1,6 @@
 pluginManagement {
     repositories {
-
-        val packagecloud_vpn_token = "YOUR_PACKAGE_CLOUD_TOKEN"
+        val packagecloud_vpn_token: String by settings
 
         google()
         mavenCentral()
@@ -16,7 +15,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        val packagecloud_vpn_token = "YOUR_PACKAGE_CLOUD_TOKEN"
+        val packagecloud_vpn_token:String by settings
         mavenLocal()
         google()
         mavenCentral()
