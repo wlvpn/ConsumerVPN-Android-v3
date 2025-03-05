@@ -44,6 +44,8 @@ new VPN applications for Android platforms.
       - [Populate VPN protocol settings object](#populate-vpn-protocol-settings-object)
       - [Call VpnConnection.connectToVpn](#call-vpnconnectionconnecttovpn)
   - [App Theming](#app-theming)
+  - [Threat Protection](#threat-protection)
+  - [Token based Authentication](#token-based-authentication)
 
 ## Before starting
 To compile this project account information has to be provided by an
@@ -492,6 +494,22 @@ This flow can also be found within ConsumerVPN 3 app.
 [Mobile App Theming](documentation/APP_THEMING.md)
 
 [TV App Theming](documentation/TV_APP_THEMING.md)
+
+
+## Threat Protection
+
+Threat Protection feature ensures a secure user traffic by blocking malicious ads through a VPN DNS.
+
+You can toggle this feature in Settings -> Threat protection.
+
+If you want to customize this feature please refer to the
+[Threat Protection document](documentation/THREAT_PROTECTION.md)
+
+## Token based Authentication
+
+ConsumerVPNv3 app uses user/password auth by default, if you want to change this the VPN SDK also
+supports token auth, please refer to
+[Token Based Authentication Document](documentation/TOKEN_BASED_AUTH.md) for more details.
 
 
 [1]: https://m3.material.io/foundations/content-design/style-guide/
