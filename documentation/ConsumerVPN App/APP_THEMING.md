@@ -210,6 +210,15 @@ windowSplashScreenIconBackgroundColor to the values of the adaptive icon foregro
 4. `windowSplashScreenAnimationDuration` This defines the duration for the splash screen
 and needs to be 0 if using AVD.
 
+## Dark theme only
+
+If you wish for your application to exclusively use a dark theme, regardless of the system's current 
+theme preference, you can achieve this by modifying a specific configuration flag within your app's 
+resources. Here's how to enforce dark mode only:
+
+1. Go to the `bools.xml` [file](../../app/src/main/res/values/bools.xml).
+2. Change the flag `theme_dark_theme_only` to `true`.
+3. Re-build the app.
 
 [1]: https://m3.material.io/
 [2]: https://developer.android.com/compose

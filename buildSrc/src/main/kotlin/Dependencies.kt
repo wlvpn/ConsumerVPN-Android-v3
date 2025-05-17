@@ -91,11 +91,10 @@ object BuildPlugins {
 
 object AndroidSdk {
 
-    const val minSdk = 23
+    const val minSdk = 25
     const val targetSdk = 33
     const val compileSdk = 34
     const val namespace = "com.wlvpn.consumervpn"
-    const val applicationId = namespace
 }
 
 object Dependencies {
@@ -507,7 +506,7 @@ object Dependencies {
     val vpnSdk = Dependency(
         group = "com.wlvpn.vpnsdk",
         module = "sdkv2",
-        version = "2.3.0.213595-SNAPSHOT"
+        version = "2.3.7.255575"
     )
 
     val desugaringJavaApi = Dependency(

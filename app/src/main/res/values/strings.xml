@@ -86,6 +86,11 @@
     <string name="locations_screen_label_title">Locations</string>
     <string name="locations_screen_sort_menu_country">Country</string>
     <string name="locations_screen_sort_menu_city">City</string>
+    <string name="locations_screen_search_no_result">No results</string>
+    <string name="locations_dialog_connect_to_label">Would you like to connect to %s?</string>
+    <string name="locations_dialog_connect_button_label">Connect</string>
+    <string name="locations_dialog_cancel_button_label">Cancel</string>
+    <string name="locations_dialog_title_label">Location selection</string>
 
     <!-- Kill switch dialog -->
     <string name="kill_switch_dialog_label_title">Enable OS kill switch</string>
@@ -116,6 +121,11 @@
     <string name="home_screen_connecting_progress_label">Connecting</string>
     <string name="home_screen_best_available_in_label">Best Available in %1$s</string>
     <string name="home_screen_best_available_label">Best Available</string>
+    <string name="home_screen_expired_account_label">Unable to connect,expired account</string>
+    <string name="home_screen_invalid_account_label">Unable to connect, invalid account</string>
+    <string name="home_screen_invalid_api_response_label">Unable to connect, Invalid API response</string>
+    <string name="home_screen_unable_to_connect_label">Unable to connect, try again later</string>
+    <string name="home_screen_user_not_logged_in_label">Unable to connect, user not logged in</string>
 
     <!-- Settings -->
     <string name="settings_screen_loading_label">Loading</string>

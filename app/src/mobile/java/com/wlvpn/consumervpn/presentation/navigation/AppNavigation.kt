@@ -1,6 +1,10 @@
 package com.wlvpn.consumervpn.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -25,6 +29,7 @@ fun AppNavigation(
     onSignUp: () -> Unit,
     onForgotPassword: () -> Unit,
 ) {
+    var homeScreenStartConnection by remember { mutableStateOf(false) }
 
     NavHost(
         modifier = modifier,
@@ -49,8 +54,10 @@ fun AppNavigation(
             HomeScreen(
                 navController = navController,
                 viewModel = homeViewModel,
-                onBackPressed = { closeApp() }
+                onBackPressed = { closeApp() },
+                startConnection = homeScreenStartConnection,
             )
+            homeScreenStartConnection = false
         }
 
         composable(route = Routes.Locations.route) {
@@ -59,6 +66,7 @@ fun AppNavigation(
             LocationsScreen(
                 viewModel = viewModel,
                 onConnect = {
+                    homeScreenStartConnection = true
                     navController.navigate(Routes.Home.route) {
                         popUpTo(Routes.Home.route) {
                         }

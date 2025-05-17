@@ -7,7 +7,8 @@ sealed class ServerLocation : Serializable {
     data class Country(
         val name: String = "",
         val code: String = "",
-        val cities: List<City> = emptyList()
+        val cities: List<City> = emptyList(),
+        val searchedBy: SearchMatchType? = null
     ) : ServerLocation()
 
     data class City(

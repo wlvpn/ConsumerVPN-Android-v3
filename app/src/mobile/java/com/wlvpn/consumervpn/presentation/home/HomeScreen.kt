@@ -1,10 +1,14 @@
 package com.wlvpn.consumervpn.presentation.home
 
 import android.content.res.Configuration
+import android.net.VpnService
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,16 +23,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -49,6 +59,12 @@ import com.wlvpn.consumervpn.domain.value.ConnectionTarget.Country
 import com.wlvpn.consumervpn.domain.value.ConnectionTarget.Fastest
 import com.wlvpn.consumervpn.domain.value.ConnectionTarget.Server
 import com.wlvpn.consumervpn.domain.value.ServerLocation
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.ExpiredWireGuardAccount
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.InactiveWireGuardAccount
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.InvalidWireGuardApiResponse
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.NoNetworkError
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.UnableToConnect
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.UserNotLogged
 import com.wlvpn.consumervpn.presentation.home.GeoLocationEvent.GeoLocationChanged
 import com.wlvpn.consumervpn.presentation.home.HomeEvent.Connected
 import com.wlvpn.consumervpn.presentation.home.HomeEvent.Connecting
@@ -56,11 +72,13 @@ import com.wlvpn.consumervpn.presentation.home.HomeEvent.Disconnected
 import com.wlvpn.consumervpn.presentation.home.HomeEvent.DisconnectedError
 import com.wlvpn.consumervpn.presentation.home.SelectedTargetEvent.SelectedTargetUpdated
 import com.wlvpn.consumervpn.presentation.ui.theme.LocalColors
+import com.wlvpn.consumervpn.presentation.ui.theme.LocalDimens
 import com.wlvpn.consumervpn.presentation.util.Routes
 import com.wlvpn.consumervpn.presentation.util.countryNameFromCode
 import java.util.Locale
 
 private const val POST_NOTIFICATIONS_PERMISSION = "android.permission.POST_NOTIFICATIONS"
+private const val VPN_PERMISSION_GRANTED = -1
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -68,17 +86,48 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel,
     onBackPressed: () -> Unit,
+    startConnection: Boolean,
 ) {
+    val context = LocalContext.current
     val state by viewModel.homeEvent.observeAsState()
     val geoState by viewModel.geoLocationEvent.observeAsState()
     val selectedTargetState by viewModel.selectedTargetEvent.observeAsState()
+    val failureEvents by viewModel.failureEvent.collectAsState()
     val notificationPermission = rememberPermissionState(
         permission = POST_NOTIFICATIONS_PERMISSION
     )
+    var requestConnection by remember { mutableStateOf(startConnection) }
+
+    val requestVpnPermissionsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            if(it.resultCode == VPN_PERMISSION_GRANTED){
+                viewModel.connect()
+            }
+        }
+    )
+
+    // Reload state when starting with a connection request so the new
+    // selected location is updated in the UI
+    LaunchedEffect(startConnection) {
+        viewModel.loadState()
+    }
 
     /* To handle on back pressed manually */
     BackHandler(true) {
         onBackPressed()
+    }
+
+    when (failureEvents) {
+        ExpiredWireGuardAccount -> ShowToast(string.home_screen_expired_account_label)
+        InactiveWireGuardAccount -> ShowToast(string.home_screen_invalid_account_label)
+        InvalidWireGuardApiResponse -> ShowToast(string.home_screen_invalid_api_response_label)
+        NoNetworkError -> ShowToast(string.home_screen_no_network_error_label)
+        UnableToConnect -> ShowToast(string.home_screen_unable_to_connect_label)
+        UserNotLogged -> ShowToast(string.home_screen_user_not_logged_in_label)
+        null -> {
+            // no - op
+        }
     }
 
     Scaffold { paddingValues ->
@@ -105,7 +154,7 @@ fun HomeScreen(
                     selectedTargetEvent = selectedTargetState,
                     onLocationClick = { navController.navigate(Routes.Locations.route) }
                 ) {
-                    viewModel.connect()
+                    requestConnection = true
                 }
 
             is DisconnectedError, null -> {
@@ -114,7 +163,7 @@ fun HomeScreen(
                     selectedTargetEvent = selectedTargetState,
                     onLocationClick = { navController.navigate(Routes.Locations.route) }
                 ) {
-                    viewModel.connect()
+                    requestConnection = true
                 }
 
                 Toast.makeText(
@@ -133,6 +182,17 @@ fun HomeScreen(
         LaunchedEffect(Unit) {
             notificationPermission.launchPermissionRequest()
         }
+    }
+
+    if (requestConnection) {
+        LaunchedEffect(Unit) {
+            VpnService.prepare(context)?.let {
+                requestVpnPermissionsLauncher.launch(it)
+            } ?: run {
+                viewModel.connect()
+            }
+        }
+        requestConnection = false
     }
 }
 
@@ -253,6 +313,7 @@ inline fun DisconnectedContent(
 
             Text(
                 modifier = Modifier.align(Alignment.Bottom),
+                color = LocalColors.current.extendedColors.clickableTextColor,
                 text = when (selectedTargetEvent) {
                     is SelectedTargetUpdated ->
                         when (val target = selectedTargetEvent.selectedTarget) {
@@ -381,8 +442,11 @@ inline fun ConnectButton(
     Button(
         modifier = modifier
             .width(dimensionResource(id = dimen.home_connection_button_width)),
-        shape = ButtonDefaults.filledTonalShape,
-        colors = ButtonDefaults.filledTonalButtonColors(),
+        shape = RoundedCornerShape(LocalDimens.current.xxSmall),
+        colors = buttonColors(
+            containerColor = LocalColors.current.scheme.primaryContainer,
+            contentColor = LocalColors.current.scheme.secondary,
+        ),
         onClick = { onClick() }) {
         Text(text = stringResource(string.home_screen_connect_button_label))
     }
@@ -396,6 +460,7 @@ inline fun DisconnectButton(
     Button(
         modifier = modifier
             .width(dimensionResource(id = dimen.home_connection_button_width)),
+        shape = RoundedCornerShape(LocalDimens.current.xxSmall),
         colors = ButtonDefaults.buttonColors(
             containerColor = LocalColors.current.extendedColors.disconnectedColor,
             contentColor = LocalColors.current.extendedColors.controlNormalColor
@@ -403,4 +468,13 @@ inline fun DisconnectButton(
         onClick = { onClick() }) {
         Text(text = stringResource(string.home_screen_disconnect_button_label))
     }
+}
+
+@Composable
+fun ShowToast(@StringRes resId: Int, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(
+        LocalContext.current,
+        stringResource(resId),
+        duration
+    ).show()
 }

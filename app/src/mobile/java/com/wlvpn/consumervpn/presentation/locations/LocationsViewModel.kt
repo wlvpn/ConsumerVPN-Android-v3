@@ -10,9 +10,14 @@ import com.wlvpn.consumervpn.application.interactor.location.RetrieveCityLocatio
 import com.wlvpn.consumervpn.application.interactor.location.RetrieveCountryLocationsContract
 import com.wlvpn.consumervpn.application.interactor.location.SearchCityLocationsContract
 import com.wlvpn.consumervpn.application.interactor.location.SearchCountryLocationsContract
+import com.wlvpn.consumervpn.application.interactor.settings.SaveServerLocationToConnectContract
+import com.wlvpn.consumervpn.application.interactor.settings.SaveServerLocationToConnectContract.Status
+import com.wlvpn.consumervpn.application.interactor.settings.SaveServerLocationToConnectContract.Status.UnableToSaveServerLocation
 import com.wlvpn.consumervpn.domain.value.ServerLocation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -25,12 +30,16 @@ class LocationsViewModel @Inject constructor(
     private val retrieveCityLocationsInteractor: RetrieveCityLocationsContract.Interactor,
     private val searchCountryLocationsInteractor: SearchCountryLocationsContract.Interactor,
     private val searchCityLocationsInteractor: SearchCityLocationsContract.Interactor,
-    private val connectToLocationInteractor: ConnectToLocationContract.Interactor
+    private val saveServerLocationToConnectInteractor: SaveServerLocationToConnectContract.Interactor
     ) : ViewModel() {
 
     val locationsEvent = MutableLiveData<LocationsEvent>()
     val locationsCityEvent = MutableLiveData<LocationsEvent>()
     private var citySortState: LocationsSortingType = LocationsSortingType.ByCountry
+    private val saveLocationMutableStateFlow: MutableStateFlow<LocationsEvent?> =
+        MutableStateFlow(null)
+    val saveLocationStateFlow: StateFlow<LocationsEvent?> = saveLocationMutableStateFlow
+
 
     init {
         loadCountryServerLocations()
@@ -132,21 +141,22 @@ class LocationsViewModel @Inject constructor(
         loadCityServerLocations()
     }
 
-    fun connectToLocation(location: ServerLocation) {
+    fun saveServerLocationToConnect(serverLocation: ServerLocation) {
         viewModelScope.launch(Dispatchers.IO) {
-            connectToLocationInteractor.execute(location)
-                .collectLatest {
+            saveServerLocationToConnectInteractor.execute(serverLocation)
+                .catch {
+                    Timber.e(it, "Error while saving location to connect")
+                }.collectLatest {
                     when (it) {
-                        NoNetworkFailure ->
-                            locationsEvent.postValue(LocationsEvent.NoNetworkFailure)
+                        Status.Success ->
+                            saveLocationMutableStateFlow.value =
+                                LocationsEvent.SelectedLocationSaved
 
-                        Success ->
-                            locationsEvent.postValue(LocationsEvent.ConnectionRequestSuccess)
-
-                        else ->
-                            locationsEvent.postValue(LocationsEvent.ConnectionRequestFailure)
+                        is UnableToSaveServerLocation -> saveLocationMutableStateFlow.value =
+                            LocationsEvent.UnableToSaveSelectedLocation
                     }
                 }
         }
     }
+
 }

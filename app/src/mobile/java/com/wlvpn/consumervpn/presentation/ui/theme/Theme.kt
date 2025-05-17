@@ -15,7 +15,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.booleanResource
 import androidx.core.view.WindowCompat
+import com.wlvpn.consumervpn.R.bool
 
 @Immutable
 data class ExtendedColorScheme(
@@ -169,7 +171,9 @@ fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val isDarkThemeOnly =  booleanResource(bool.theme_dark_theme_only)
     val colorScheme = when {
+        isDarkThemeOnly -> extendedDark
         darkTheme -> extendedDark
         else -> extendedLight
     }
@@ -178,7 +182,8 @@ fun AppTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.scheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view)
+                .isAppearanceLightStatusBars = !isDarkThemeOnly && !darkTheme
         }
     }
 

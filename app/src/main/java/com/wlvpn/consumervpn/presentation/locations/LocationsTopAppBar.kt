@@ -23,6 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import com.wlvpn.consumervpn.R
 import com.wlvpn.consumervpn.presentation.ui.theme.LocalColors
@@ -32,17 +35,20 @@ import com.wlvpn.consumervpn.presentation.ui.theme.LocalColors
 fun LocationsTopAppBar(
     sortByCountry: () -> Unit,
     sortByCity: () -> Unit,
-    onSearchText: (text: String) -> Unit
+    onSearchText: (text: String) -> Unit,
+    onCancelSearch: () -> Unit
 ) {
     var expandedSearch by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     var countrySelected by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
     var citySelected by remember {
         mutableStateOf(false)
     }
     var showMenu by remember { mutableStateOf(false) }
+
+    val focusRequester = remember { FocusRequester() }
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -58,32 +64,41 @@ fun LocationsTopAppBar(
         },
         actions = {
             if (expandedSearch) {
-                    OutlinedTextField(value = searchText, colors =
-                    OutlinedTextFieldDefaults.colors(
+                OutlinedTextField(
+                    modifier = Modifier.focusRequester(focusRequester)
+                        .onGloballyPositioned { focusRequester.requestFocus() },
+                    value = searchText,
+                    colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor =
-                            LocalColors.current.extendedColors.controlNormalColor,
+                        LocalColors.current.extendedColors.controlNormalColor,
                         unfocusedBorderColor =
-                            LocalColors.current.extendedColors.controlNormalColor,
+                        LocalColors.current.extendedColors.controlNormalColor,
                         unfocusedLeadingIconColor =
-                            LocalColors.current.extendedColors.controlNormalColor,
+                        LocalColors.current.extendedColors.controlNormalColor,
                         focusedLeadingIconColor =
-                            LocalColors.current.extendedColors.controlNormalColor
+                        LocalColors.current.extendedColors.controlNormalColor
                     ),
                     onValueChange = {
                         searchText = it
                         onSearchText(it)
                     }, leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) })
-                IconButton(onClick = { expandedSearch = false }) {
+                IconButton(onClick = {
+                    expandedSearch = false
+                    searchText = ""
+                    onCancelSearch()
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Cancel,
                         contentDescription = "Localized description"
                     )
                 }
             } else {
-                IconButton(onClick = { expandedSearch = true },
+                IconButton(
+                    onClick = { expandedSearch = true },
                     colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = LocalColors.current.extendedColors.controlNormalColor
-                )) {
+                        contentColor = LocalColors.current.extendedColors.controlNormalColor
+                    )
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = "Localized description"
@@ -91,7 +106,8 @@ fun LocationsTopAppBar(
                 }
             }
 
-            IconButton(onClick = { showMenu = !showMenu },
+            IconButton(
+                onClick = { showMenu = !showMenu },
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = LocalColors.current.extendedColors.controlNormalColor
                 )
@@ -108,11 +124,15 @@ fun LocationsTopAppBar(
                     LocalColors.current.scheme.background
                 )
             ) {
-                MenuItemWithCheckMark(stringResource(id =
-                R.string.locations_screen_sort_menu_country),  countrySelected, onClick = {
+                MenuItemWithCheckMark(stringResource(
+                    id =
+                    R.string.locations_screen_sort_menu_country
+                ), countrySelected, onClick = {
                     showMenu = false
                     countrySelected = true
                     citySelected = false
+                    expandedSearch = false
+                    searchText = ""
                     sortByCountry()
                 }
                 )
@@ -121,6 +141,8 @@ fun LocationsTopAppBar(
                         showMenu = false
                         citySelected = true
                         countrySelected = false
+                        expandedSearch = false
+                        searchText = ""
                         sortByCity()
                     }
                 )
@@ -132,9 +154,13 @@ fun LocationsTopAppBar(
 @Composable
 fun MenuItemWithCheckMark(text: String, showIcon: Boolean, onClick: () -> Unit) {
     if (showIcon) {
-        DropdownMenuItem(text = { Text(text) }, trailingIcon = { Icon(
-            Icons.Filled.Check, contentDescription = null) },
-         onClick = onClick)
+        DropdownMenuItem(text = { Text(text) }, trailingIcon = {
+            Icon(
+                Icons.Filled.Check, contentDescription = null
+            )
+        },
+            onClick = onClick
+        )
     } else {
         DropdownMenuItem(text = { Text(text) }, onClick = onClick)
     }

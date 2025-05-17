@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -51,7 +53,12 @@ import com.wlvpn.consumervpn.domain.value.ConnectionTarget.Country
 import com.wlvpn.consumervpn.domain.value.ConnectionTarget.Fastest
 import com.wlvpn.consumervpn.domain.value.ConnectionTarget.Server
 import com.wlvpn.consumervpn.domain.value.ServerLocation
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.ExpiredWireGuardAccount
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.InactiveWireGuardAccount
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.InvalidWireGuardApiResponse
 import com.wlvpn.consumervpn.presentation.home.FailureEvent.NoNetworkError
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.UnableToConnect
+import com.wlvpn.consumervpn.presentation.home.FailureEvent.UserNotLogged
 import com.wlvpn.consumervpn.presentation.home.GeoLocationEvent.GeoLocationChanged
 import com.wlvpn.consumervpn.presentation.home.HomeEvent.Connected
 import com.wlvpn.consumervpn.presentation.home.HomeEvent.Connecting
@@ -78,7 +85,7 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.homeEvent.observeAsState()
-    val failureState by viewModel.failureEvent.observeAsState()
+    val failureState by viewModel.failureEvent.collectAsState()
     val geoState by viewModel.geoLocationEvent.observeAsState()
     val selectedTargetState by viewModel.selectedTargetEvent.observeAsState()
     val notificationPermission = rememberPermissionState(
@@ -207,12 +214,16 @@ fun HomeScreen(
         onBackPressed = { showSettings = false }
     )
 
-    if (failureState == NoNetworkError) {
-        Toast.makeText(
-            LocalContext.current,
-            stringResource(R.string.home_screen_no_network_error_label),
-            Toast.LENGTH_LONG
-        ).show()
+    when (failureState) {
+        ExpiredWireGuardAccount -> ShowToast(R.string.home_screen_expired_account_label)
+        InactiveWireGuardAccount -> ShowToast(R.string.home_screen_invalid_account_label)
+        InvalidWireGuardApiResponse -> ShowToast(R.string.home_screen_invalid_api_response_label)
+        NoNetworkError -> ShowToast(R.string.home_screen_no_network_error_label)
+        UnableToConnect -> ShowToast(R.string.home_screen_unable_to_connect_label)
+        UserNotLogged -> ShowToast(R.string.home_screen_user_not_logged_in_label)
+        null -> {
+            // no - op
+        }
     }
 
     if (state == DisconnectedError) {
@@ -491,3 +502,12 @@ fun ButtonDefaults.disconnectColors(): ButtonColors = colors(
     pressedContainerColor = LocalColors.current.extendedColors.disconnectSelectedButtonColor,
     pressedContentColor = LocalColors.current.scheme.secondary,
 )
+
+@Composable
+fun ShowToast(@StringRes resId: Int, duration: Int = Toast.LENGTH_LONG) {
+    Toast.makeText(
+        LocalContext.current,
+        stringResource(resId),
+        duration
+    ).show()
+}
