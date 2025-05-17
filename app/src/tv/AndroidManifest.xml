@@ -12,10 +12,10 @@
         tools:ignore="UnsupportedTvHardware" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
         android:name=".presentation.ConsumerApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:banner="@mipmap/ic_banner_tv"
         android:icon="@mipmap/ic_launcher_tv"
         android:label="@string/app_name"

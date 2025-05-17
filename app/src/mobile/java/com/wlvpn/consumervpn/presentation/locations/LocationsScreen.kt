@@ -4,10 +4,12 @@ import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,17 +18,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,20 +53,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
 import com.wlvpn.consumervpn.R
+import com.wlvpn.consumervpn.R.string
 import com.wlvpn.consumervpn.domain.value.ConnectionTarget
+import com.wlvpn.consumervpn.domain.value.SearchMatchType
 import com.wlvpn.consumervpn.domain.value.ServerLocation
+import com.wlvpn.consumervpn.domain.value.ServerLocation.City
+import com.wlvpn.consumervpn.domain.value.ServerLocation.Country
+import com.wlvpn.consumervpn.domain.value.ServerLocation.Fastest
+import com.wlvpn.consumervpn.domain.value.ServerLocation.Server
 import com.wlvpn.consumervpn.presentation.ui.theme.LocalColors
+import com.wlvpn.consumervpn.presentation.ui.theme.LocalDimens
 import com.wlvpn.consumervpn.presentation.util.getUriForFlag
 import kotlinx.coroutines.launch
 
 @Composable
 inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect: () -> Unit) {
 
+    val context = LocalContext.current
+
     val rowHeight = dimensionResource(id = R.dimen.spacing_xxxxlarge)
     val rowPadding = dimensionResource(id = R.dimen.spacing_xsmall)
 
     val activity = LocalContext.current as Activity
     val colorAppBar = LocalColors.current.scheme.background
+
+    var requestConnection by remember { mutableStateOf(false) }
+    var currentConnectionTarget by remember { mutableStateOf<ServerLocation>(ServerLocation.Fastest) }
+
+    var citySortState by remember { mutableStateOf(false) }
 
     SideEffect {
         activity.window?.apply {
@@ -69,17 +91,30 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
     }
 
     val locationsEvent = viewModel.locationsEvent.observeAsState()
+    val saveLocationEvent by viewModel.saveLocationStateFlow.collectAsState()
+
+    if (saveLocationEvent is LocationsEvent.SelectedLocationSaved){
+        onConnect()
+    }
 
     Scaffold(
         topBar = {
-                LocationsTopAppBar(onSearchText = {
-                    viewModel.searchText(it)
-                }, sortByCity = {
+            LocationsTopAppBar(onSearchText = {
+                viewModel.searchText(it)
+            }, sortByCity = {
+                viewModel.sortByCity()
+                citySortState = true
+            }, sortByCountry =  {
+                viewModel.sortByCountry()
+                citySortState = false
+            }, onCancelSearch =  {
+                if (citySortState) {
                     viewModel.sortByCity()
-                }, sortByCountry =  {
+                } else {
                     viewModel.sortByCountry()
-                })
-                 }
+                }
+            })
+        }
     ) { paddingValues ->
         when (val event = locationsEvent.value) {
             is LocationsEvent.CityLocationListLoaded ->
@@ -89,7 +124,10 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
                     event.savedTarget,
                     rowHeight,
                     rowPadding,
-                    viewModel::connectToLocation
+                    connect = {
+                        currentConnectionTarget = it
+                        requestConnection = true
+                    }
                 )
 
             LocationsEvent.ConnectionRequestFailure -> {}
@@ -103,7 +141,10 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
                     event.savedTarget,
                     rowHeight,
                     rowPadding,
-                    viewModel::connectToLocation
+                    connect = {
+                        currentConnectionTarget = it
+                        requestConnection = true
+                    }
                 )
 
             LocationsEvent.ListLoadingInProgress -> {}
@@ -116,12 +157,27 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
             is LocationsEvent.UnknownErrorFailure -> {}
             LocationsEvent.UserNotAuthenticated -> {}
             LocationsEvent.InitialSearchState -> {}
-            LocationsEvent.NoSearchResults -> {}
+            LocationsEvent.NoSearchResults -> {
+                NoSearchResults(stringResource(id = string.locations_screen_search_no_result))
+            }
             LocationsEvent.SearchingLocations -> {}
             LocationsEvent.UnableToRetrieveSearchLocations -> {}
             LocationsEvent.UnableToUpdateConnectionTarget -> {}
             null -> {}
         }
+    }
+
+    if (requestConnection) {
+        ConnectDialog(
+            connectionTarget = currentConnectionTarget,
+            onDismiss = {
+                requestConnection = false
+            },
+            onConfirm = {
+                viewModel.saveServerLocationToConnect(currentConnectionTarget)
+                requestConnection = false
+            }
+        )
     }
 }
 
@@ -138,7 +194,13 @@ fun CitiesContent(
         .padding(paddingValues)
     ) {
         item {
-            FastestAvailable(rowHeight, rowPadding)
+            FastestAvailable(
+                modifier = Modifier.clickable {
+                    connect(ServerLocation.Fastest)
+                },
+                rowHeight,
+                rowPadding
+            )
         }
 
         itemsIndexed(cityLocationList) { _, city ->
@@ -222,7 +284,13 @@ fun CountriesContent(
     rowPadding: Dp,
     connect: (location: ServerLocation) -> Unit
 ) {
-    val expandedState = remember { mutableStateOf(List(countryLocationList.size) { false }) }
+    val expandedState = remember(countryLocationList) {
+        mutableStateOf(
+            countryLocationList.map {
+                it.searchedBy == SearchMatchType.CityName
+            }
+        )
+    }
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberLazyListState()
     LazyColumn(
@@ -231,7 +299,13 @@ fun CountriesContent(
         state = scrollState
     ) {
         item {
-            FastestAvailable(rowHeight, rowPadding)
+            FastestAvailable(
+                modifier = Modifier.clickable {
+                    connect(ServerLocation.Fastest)
+                },
+                rowHeight,
+                rowPadding
+            )
         }
         itemsIndexed(countryLocationList) { index, country ->
             val isSelected = currentTarget is ConnectionTarget.Country &&
@@ -326,9 +400,13 @@ fun CountriesContent(
 }
 
 @Composable
-fun FastestAvailable(height: Dp, rowPadding: Dp) {
+fun FastestAvailable(
+    modifier: Modifier,
+    height: Dp,
+    rowPadding: Dp
+) {
 
-    Row(modifier = Modifier
+    Row(modifier = modifier
         .background(LocalColors.current.extendedColors.backgroundLocationNormal)
         .fillMaxWidth()
         .height(height)
@@ -342,10 +420,20 @@ fun FastestAvailable(height: Dp, rowPadding: Dp) {
         Text(modifier = Modifier
             .padding(
                 start = rowPadding
-            ), text = stringResource(id = R.string.locations_screen_label_fastest_available),
+            ), text = stringResource(id = string.locations_screen_label_fastest_available),
             color = LocalColors.current.extendedColors.controlNormalColor
         )
 
+    }
+}
+
+@Composable
+fun NoSearchResults(text: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = text)
     }
 }
 
@@ -359,7 +447,8 @@ fun CitiesContentPreview() {
             LocationsTopAppBar(
                 onSearchText = {},
                 sortByCity = {},
-                sortByCountry =  {}
+                sortByCountry =  {},
+                onCancelSearch = {}
             )
         }
     ) { paddingValues ->
@@ -391,7 +480,8 @@ fun CountriesContentPreview() {
             LocationsTopAppBar(
                 onSearchText = {},
                 sortByCity = {},
-                sortByCountry =  {}
+                sortByCountry =  {},
+                onCancelSearch = {}
             )
         }
     ) { paddingValues ->
@@ -412,4 +502,59 @@ fun CountriesContentPreview() {
         ) {}
     }
 
+}
+
+@Composable
+fun ConnectDialog(
+    modifier: Modifier = Modifier,
+    connectionTarget: ServerLocation,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        modifier = modifier,
+        shape = RoundedCornerShape(LocalDimens.current.xxSmall),
+        containerColor = LocalColors.current.scheme.onPrimaryContainer,
+        title = {
+            Text(
+                color = LocalColors.current.scheme.surface,
+                text = stringResource(string.locations_dialog_title_label),
+            )
+        },
+        text = {
+            val target = when (connectionTarget) {
+                is City -> "${connectionTarget.name}, ${connectionTarget.country.name}"
+                is Country -> connectionTarget.name
+                Fastest -> stringResource(string.locations_screen_label_fastest_available)
+                is Server -> stringResource(string.locations_screen_search_no_result)
+            }
+            Text(
+                color = LocalColors.current.scheme.surface,
+                text = stringResource(string.locations_dialog_connect_to_label, target)
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirm()
+            }) {
+                Text(
+                    color = LocalColors.current.scheme.primaryContainer,
+                    text = stringResource(string.locations_dialog_connect_button_label)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                onDismiss()
+            }) {
+                Text(
+                    color = LocalColors.current.scheme.primaryContainer,
+                    text = stringResource(string.locations_dialog_cancel_button_label)
+                )
+            }
+        },
+        onDismissRequest = {
+            onDismiss()
+        },
+    )
 }

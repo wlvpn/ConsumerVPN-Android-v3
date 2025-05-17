@@ -18,7 +18,7 @@ android {
     compileSdk = AndroidSdk.compileSdk
 
     defaultConfig {
-        applicationId = AndroidSdk.applicationId
+        applicationId = "com.wlvpn.consumervpn"  // Update this with your own application id
         minSdk = AndroidSdk.minSdk
         targetSdk = AndroidSdk.targetSdk
         versionCode = getVersionCode()

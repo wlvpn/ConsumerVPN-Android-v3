@@ -3,6 +3,7 @@ package com.wlvpn.consumervpn.application.interactor.location
 import com.wlvpn.consumervpn.application.interactor.location.SearchCountryLocationsContract.Status
 import com.wlvpn.consumervpn.domain.gateway.ExternalServersGateway
 import com.wlvpn.consumervpn.domain.repository.ConnectionSettingsRepository
+import com.wlvpn.consumervpn.domain.value.SearchMatchType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
@@ -24,20 +25,30 @@ class SearchCountryLocationsInteractor(
                     ) { countries, cities, settings ->
                             // We include the cities on search too
                             val resultList =  countries.filter { countryLocation ->
-                                    countryLocation.name.contains(trimTerm, true) ||
-                                            cities.any { city ->
-                                                city.country.code == countryLocation.code &&
-                                                    city.name.contains(
-                                                        trimTerm,
-                                                        ignoreCase = true
-                                                    )
-                                            }
-                                }.map {  country ->
-                                    country.copy(cities = cities.filter {
-                                            city -> city.country.code == country.code
-                                    })
-                                }
-
+                                countryLocation.name.contains(trimTerm, true) ||
+                                    cities.any { city ->
+                                        city.country.code == countryLocation.code &&
+                                            city.name.contains(
+                                                trimTerm,
+                                                ignoreCase = true
+                                            )
+                                    }
+                            }.map { countryLocation ->
+                                val isCountryMatch = countryLocation.name.contains(
+                                    trimTerm, ignoreCase = true
+                                )
+                                countryLocation.copy(
+                                    searchedBy = if (isCountryMatch) {
+                                        SearchMatchType.CountryName
+                                    } else {
+                                        SearchMatchType.CityName
+                                    }
+                                )
+                            }.map {  country ->
+                                country.copy(cities = cities.filter {
+                                        city -> city.country.code == country.code
+                                })
+                            }
                             if (resultList.isNotEmpty()) {
                                     Status.SearchResults(
                                         resultList, settings.selectedTarget

@@ -55,6 +55,9 @@ class SdkExternalVpnSettingsGateway(
 
                     InvalidApiKey ->
                         throw ExternalVpnSettingsGateway.InvalidApiKeyFailure()
+
+                    else ->
+                        throw  UnableToPrepareThreatProtectionFailure()
                 }
             }
 }

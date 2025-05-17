@@ -4,7 +4,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.ExpiredWireGuardAccountFailure
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.InactiveWireGuardAccountFailure
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.InvalidWireGuardApiResponseFailure
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.NoNetworkFailure
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.Success
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.UnableToConnectFailure
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.UserNotLoggedFailure
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToLocationContract.Status.VpnNotPreparedFailure
 import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToVpnContract
+import com.wlvpn.consumervpn.application.interactor.connectivity.ConnectToVpnContract.Status
 import com.wlvpn.consumervpn.application.interactor.connectivity.DisconnectFromVpnContract
 import com.wlvpn.consumervpn.application.interactor.connectivity.FetchGeoLocationContract
 import com.wlvpn.consumervpn.application.interactor.connectivity.ListenVpnStateContract
@@ -18,15 +27,19 @@ import com.wlvpn.consumervpn.domain.value.ServerLocation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val FETCH_GEO_INFO_DELAY = 1000L
+private const val FAILURE_EVENT_RESET_DELAY = 200L
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -40,9 +53,11 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val homeEvent = MutableLiveData<HomeEvent>(HomeEvent.Disconnected)
-    val failureEvent = MutableLiveData<FailureEvent>()
     val geoLocationEvent = MutableLiveData<GeoLocationEvent>()
     val selectedTargetEvent = MutableLiveData<SelectedTargetEvent>()
+
+    private val failureEventFlow = MutableStateFlow<FailureEvent?>(null)
+    val failureEvent: StateFlow<FailureEvent?> = failureEventFlow
 
     init {
         loadState()
@@ -78,9 +93,38 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             connectToVpnInteractor.execute()
                 .collectLatest {
-                    if (it is ConnectToVpnContract.Status.NoNetworkFailure) {
-                        failureEvent.postValue(FailureEvent.NoNetworkError)
+                    when (it) {
+                        Status.ExpiredWireGuardAccountFailure ->
+                            failureEventFlow.value = FailureEvent.ExpiredWireGuardAccount
+
+                        Status.InactiveWireGuardAccountFailure ->
+                            failureEventFlow.value = FailureEvent.InactiveWireGuardAccount
+
+                        is Status.InvalidWireGuardApiResponseFailure ->
+                            failureEventFlow.value = FailureEvent.InvalidWireGuardApiResponse
+
+                        Status.NoNetworkFailure ->
+                            failureEventFlow.value = FailureEvent.NoNetworkError
+
+                        Status.Success -> {
+                            // No - op
+                        }
+
+                        is Status.UnableToConnectFailure ->
+                            failureEventFlow.value = FailureEvent.UnableToConnect
+
+                        Status.UserNotLoggedFailure ->
+                            failureEventFlow.value = FailureEvent.UserNotLogged
+
+                        Status.VpnNotPreparedFailure -> {
+                            Timber.e("VPN service not prepared")
+                            failureEventFlow.value = FailureEvent.UnableToConnect
+                        }
+
                     }
+
+                    delay(FAILURE_EVENT_RESET_DELAY)
+                    failureEventFlow.value = null
                 }
         }
     }
@@ -89,9 +133,37 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             connectToLocationInteractor.execute(serverLocation)
                 .collectLatest {
-                    if (it is ConnectToLocationContract.Status.NoNetworkFailure) {
-                        failureEvent.postValue(FailureEvent.NoNetworkError)
+                    when (it) {
+                        ExpiredWireGuardAccountFailure ->
+                            failureEventFlow.value = FailureEvent.ExpiredWireGuardAccount
+
+                        InactiveWireGuardAccountFailure ->
+                            failureEventFlow.value = FailureEvent.InactiveWireGuardAccount
+
+                        is InvalidWireGuardApiResponseFailure ->
+                            failureEventFlow.value = FailureEvent.InvalidWireGuardApiResponse
+
+                        NoNetworkFailure ->
+                            failureEventFlow.value = FailureEvent.NoNetworkError
+
+                        Success -> {
+                            // No - op
+                        }
+
+                        is UnableToConnectFailure ->
+                            failureEventFlow.value = FailureEvent.UnableToConnect
+
+                        UserNotLoggedFailure ->
+                            failureEventFlow.value = FailureEvent.UserNotLogged
+
+                        VpnNotPreparedFailure -> {
+                            Timber.e("VPN service not prepared")
+                            failureEventFlow.value = FailureEvent.UnableToConnect
+                        }
                     }
+
+                    delay(FAILURE_EVENT_RESET_DELAY)
+                    failureEventFlow.value = null
                 }
         }
     }

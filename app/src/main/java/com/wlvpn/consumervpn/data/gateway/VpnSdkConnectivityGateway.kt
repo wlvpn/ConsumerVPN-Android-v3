@@ -198,9 +198,13 @@ class VpnSdkConnectivityGateway(
         vpnConnection.listenVpnState()
             .map {
                 when (it) {
-                    is Success -> it.vpnState.toLocalState()
+                    is Success -> it.vpnState
                     is UnableToListenVpnState -> throw InternalServerFailure()
                 }
+            }
+            .filter { it !is VpnState.PotentialServiceDenial }
+            .map {
+                it.toLocalState()
             }
 
     override fun getCurrentConnection(): Flow<CurrentConnection> =
@@ -235,10 +239,14 @@ class VpnSdkConnectivityGateway(
             .take(1)
             .map {
                 when (it) {
-                    is Success -> it.vpnState.toLocalState()
+                    is Success -> it.vpnState
                     is UnableToListenVpnState ->
                         throw NotConnectedToVpnServerFailure()
                 }
+            }
+            .filter { it !is VpnState.PotentialServiceDenial }
+            .map {
+                it.toLocalState()
             }
 
     private fun VpnState.toLocalState(): VpnConnectivityStatus =
@@ -247,6 +255,8 @@ class VpnSdkConnectivityGateway(
             is VpnState.DisconnectedError -> VpnConnectivityStatus.Error
             is VpnState.Connecting -> VpnConnectivityStatus.Connecting
             is VpnState.Disconnected -> VpnConnectivityStatus.Disconnected
+            // Mapping to an error BUT this should be ignored in the calling flow
+            is VpnState.PotentialServiceDenial -> VpnConnectivityStatus.Error
         }
 
     private fun Location.Server.toLocalServer(): ServerLocation.Server =

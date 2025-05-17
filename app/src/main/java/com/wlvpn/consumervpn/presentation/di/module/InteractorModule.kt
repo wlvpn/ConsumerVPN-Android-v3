@@ -203,8 +203,16 @@ object InteractorModule {
 
     @Provides
     fun providesLogoutInteractor(
-        loginGateway: LoginGateway
-    ): LogoutContract.Interactor = LogoutInteractor(loginGateway)
+        connectivityGateway: VpnConnectivityGateway,
+        loginGateway: LoginGateway,
+        connectionSettingsRepository: ConnectionSettingsRepository,
+        protocolSettingsRepository: ProtocolSettingsRepository
+    ): LogoutContract.Interactor = LogoutInteractor(
+        connectivityGateway,
+        loginGateway,
+        connectionSettingsRepository,
+        protocolSettingsRepository
+    )
 
     @Provides
     fun providesSaveServerLocationToConnectInteractor(

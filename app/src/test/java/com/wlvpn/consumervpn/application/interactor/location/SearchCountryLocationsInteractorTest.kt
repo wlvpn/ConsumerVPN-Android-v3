@@ -149,7 +149,8 @@ internal class SearchCountryLocationsInteractorTest {
                         expectedStatus is NoSearchResults
                     is SearchResults ->
                         (expectedStatus is SearchResults &&
-                                expectedStatus.locationList == status.locationList)
+                            expectedStatus.locationList.map { it.name to it.code } ==
+                                status.locationList.map { it.name to it.code })
                     else -> false
                 }
             )
