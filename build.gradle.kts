@@ -1,12 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id(BuildPlugins.androidApplication.module) version BuildPlugins.androidApplication.version apply false
-    id(BuildPlugins.androidKotlin.module) version BuildPlugins.androidKotlin.version apply false
+    id(BuildPlugins.androidApplication.module) version
+            BuildPlugins.androidApplication.version apply false
+    id(BuildPlugins.androidKotlin.module) version
+            BuildPlugins.androidKotlin.version apply false
     id(BuildPlugins.hiltPlugin.module) version
             BuildPlugins.hiltPlugin.version apply false
-    id(BuildPlugins.androidLibrary.module) version BuildPlugins.androidApplication.version apply false
+    id(BuildPlugins.ksp.module) version
+            BuildPlugins.ksp.version apply false
     id(BuildPlugins.kotlinxSerialization.module) version
             BuildPlugins.kotlinxSerialization.version apply false
+    id(BuildPlugins.composeCompiler.module) version
+            BuildPlugins.composeCompiler.version apply false
 }
 
 buildscript {

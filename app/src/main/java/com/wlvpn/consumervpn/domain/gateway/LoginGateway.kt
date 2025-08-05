@@ -31,7 +31,7 @@ interface LoginGateway {
     class TooManyRequests : Failure()
     class UnexpectedFailure(
         val responseCode: Int = 0,
-        message: String,
+        message: String = "",
         throwable: Throwable? = null
     ) : Failure(message, throwable)
 

@@ -5,5 +5,6 @@
     <issue id="ObsoleteLintCustomCheck"
         severity="ignore" />
 
+    <issue id="NullSafeMutableLiveData" severity="warning" />
 
 </lint>
