@@ -514,10 +514,8 @@ fun ConnectDialog(
     AlertDialog(
         modifier = modifier,
         shape = RoundedCornerShape(LocalDimens.current.xxSmall),
-        containerColor = LocalColors.current.scheme.onPrimaryContainer,
         title = {
             Text(
-                color = LocalColors.current.scheme.surface,
                 text = stringResource(string.locations_dialog_title_label),
             )
         },
@@ -529,7 +527,6 @@ fun ConnectDialog(
                 is Server -> stringResource(string.locations_screen_search_no_result)
             }
             Text(
-                color = LocalColors.current.scheme.surface,
                 text = stringResource(string.locations_dialog_connect_to_label, target)
             )
         },
@@ -538,7 +535,6 @@ fun ConnectDialog(
                 onConfirm()
             }) {
                 Text(
-                    color = LocalColors.current.scheme.primaryContainer,
                     text = stringResource(string.locations_dialog_connect_button_label)
                 )
             }
@@ -548,7 +544,6 @@ fun ConnectDialog(
                 onDismiss()
             }) {
                 Text(
-                    color = LocalColors.current.scheme.primaryContainer,
                     text = stringResource(string.locations_dialog_cancel_button_label)
                 )
             }
