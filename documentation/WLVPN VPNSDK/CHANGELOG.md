@@ -1,11 +1,33 @@
 # VPN SDK Changelog
 
+## VPN SDK v2.4.0
+
+## Improvements
+- Upgrades Android target SDK and compile SDK to 35
+- Upgrades Gradle Wrapper from 8.0.1 to 8.14.3
+- Upgrades Java compatibility to Java 17
+
+### New Items
+- Adds LoginRequest.WithAppUserId for VpnAccount.login
+- Adds VpnAccount.updateDeferredAccount
+
+### Breaking Changes
+- The following responses in LoginResponse have been converted from object to data class:
+  InvalidCredentials, TooManyAttempts, InvalidApiKey
+
+## VPN SDK v2.3.8
+
+## Improvements
+- Improves the restart VPN feature that mitigates notifications not dismissing after the app is
+  force closed (either by OS o memory)
+
+
 ## VPN SDK v2.3.7
 
 ### New Items
 
-- VPN service now correctly restarts after the OS kills it due low memory or any other unexpected 
-scenario.
+- VPN service now correctly restarts after the OS kills it due low memory or any other unexpected
+  scenario.
 
 ### Breaking Changes
 
@@ -20,12 +42,12 @@ scenario.
 - Adds a new SDK configuration to allow client to set a fallback Geo location:
 ```kotlin
 VpnSdk.setup(
-    ... //configuration,
-   geoLocationFallback = GeoLocationFallback(
-     countryCode = "US",
-     latitude = 39.8283,
-     longitude = -98.5795,
-   )
+  ... //configuration,
+geoLocationFallback = GeoLocationFallback(
+  countryCode = "US",
+  latitude = 39.8283,
+  longitude = -98.5795,
+)
 )
 ```
 
@@ -73,7 +95,7 @@ VpnSdk.setup(
 - Improves refresh token management.
 
 ### New Items
-- Introduces a new response for the `VpnConnection.connect` feature: 
+- Introduces a new response for the `VpnConnection.connect` feature:
   - `ConnectToVpnResponse.PossiblePortBlockedFailure`: Returned if the local network is possibly blocking the necessary ports to have a successful connection.(Only for WireGuard)
 
 ## VPN SDK v2.3.1
@@ -123,7 +145,7 @@ VpnSdk.setup(
 
 ### Improvements
 - Fixed incorrect Innactive account messages on VPN connections
-- Improved API fallback mechanism 
+- Improved API fallback mechanism
 
 ### Breaking Changes
 - None.

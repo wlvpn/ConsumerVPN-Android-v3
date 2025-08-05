@@ -3,15 +3,19 @@ object BuildPlugins {
     // Used in normal the 'new' plugin block
     val androidApplication = Dependency(
         module = "com.android.application",
-        version = "8.1.1"
+        version = "8.11.0"
     )
-    val androidLibrary = Dependency(
-        module = "com.android.library",
-        version = "8.1.1"
+    val ksp = Dependency(
+        module = "com.google.devtools.ksp",
+        version = "2.2.0-2.0.2"
     )
     val androidKotlin = Dependency(
         module = "org.jetbrains.kotlin.android",
-        version = "1.9.24"
+        version = "2.2.0"
+    )
+    val composeCompiler = Dependency(
+        module="org.jetbrains.kotlin.plugin.compose",
+        version = "2.0.0"
     )
     val detekt = Dependency(
         module = "io.gitlab.arturbosch.detekt",
@@ -37,7 +41,7 @@ object BuildPlugins {
     )
     val hiltPlugin = Dependency(
         module = "com.google.dagger.hilt.android",
-        version = "2.51.1"
+        version = "2.56.2"
     )
 
     // Used in the traditional buildScript/classpath block
@@ -56,7 +60,7 @@ object BuildPlugins {
     val androidJunit5 = Dependency(
         group = "de.mannodermaus.gradle.plugins",
         module = "android-junit5",
-        version = "1.8.2.1"
+        version = "1.13.1.0"
     )
     const val androidJunit5ApplyName = "de.mannodermaus.android-junit5"
 
@@ -92,8 +96,8 @@ object BuildPlugins {
 object AndroidSdk {
 
     const val minSdk = 25
-    const val targetSdk = 33
-    const val compileSdk = 34
+    const val targetSdk = 35
+    const val compileSdk = 35
     const val namespace = "com.wlvpn.consumervpn"
 }
 
@@ -256,7 +260,7 @@ object Dependencies {
     val junit = Dependency(
         group = "org.junit.jupiter",
         module = "junit-jupiter-api",
-        version = "5.8.2"
+        version = "5.13.1"
     )
     val junitParams = Dependency(
         group = junit.group,
@@ -289,7 +293,7 @@ object Dependencies {
 
     // Compose
     val compose = Dependency(
-        version = "1.5.14"
+        version = "2.0.0"
     )
 
     val composeRuntime = Dependency(
@@ -506,7 +510,7 @@ object Dependencies {
     val vpnSdk = Dependency(
         group = "com.wlvpn.vpnsdk",
         module = "sdkv2",
-        version = "2.3.7.255575"
+        version = "2.4.0.268048"
     )
 
     val desugaringJavaApi = Dependency(

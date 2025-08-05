@@ -1,13 +1,17 @@
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     id(BuildPlugins.androidApplication.module)
     id(BuildPlugins.androidKotlin.module)
+    id(BuildPlugins.ksp.module)
     id(BuildPlugins.hiltPlugin.module)
     id(BuildPlugins.detekt.module) version BuildPlugins.detekt.version
-    id(BuildPlugins.kotlinKapt.module)
     id(BuildPlugins.protoBuff.module) version BuildPlugins.protoBuff.version
+    id(BuildPlugins.composeCompiler.module)
 }
 
-apply(plugin = BuildPlugins.kotlinKapt.module)
 apply(plugin = BuildPlugins.androidJunit5ApplyName)
 
 apply(from = "../config/quality/detekt/detekt-config.gradle")
@@ -104,9 +108,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -122,6 +124,11 @@ android {
     }
 }
 
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
 
 dependencies {
     implementation(Dependencies.kotlinCore.mergedId)
@@ -151,7 +158,7 @@ dependencies {
 
     //Dagger Hilt
     implementation(Dependencies.daggerHilt.mergedId)
-    kapt(Dependencies.daggerHiltCompiler.mergedId)
+    ksp(Dependencies.daggerHiltCompiler.mergedId)
 
     implementation(Dependencies.hiltNavigationCompose.mergedId)
 
@@ -203,11 +210,6 @@ protobuf {
             }
         }
     }
-}
-
-// Hilt - Allow references to generated code
-kapt {
-    correctErrorTypes = true
 }
 
 fun getVersionCode(): Int = Integer.valueOf(System.getenv("CI_PIPELINE_IID") ?: "1")

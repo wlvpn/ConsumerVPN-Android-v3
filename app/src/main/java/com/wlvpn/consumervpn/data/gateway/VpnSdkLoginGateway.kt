@@ -14,8 +14,10 @@ import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.ImportLegacyUserDataRespo
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.ImportLegacyUserDataResponse.NoLegacyDataFound
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.ImportLegacyUserDataResponse.SuccessfulImport
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.ImportLegacyUserDataResponse.UnableToImportLegacyDataFailure
+import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.AccountNotDeferred
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.EmptyPassword
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.EmptyUsername
+import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.InvalidAppUserId
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.InvalidCredentials
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.NotConnected
 import com.wlvpn.vpnsdk.sdk.fetures.account.VpnAccount.LoginResponse.ServiceError
@@ -43,7 +45,7 @@ class VpnSdkLoginGateway(
                     Success -> Unit
                     EmptyUsername -> throw LoginGateway.EmptyUsernameFailure()
                     EmptyPassword -> throw LoginGateway.EmptyPasswordFailure()
-                    InvalidCredentials -> throw LoginGateway.InvalidCredentialsFailure()
+                    is InvalidCredentials -> throw LoginGateway.InvalidCredentialsFailure()
 
                     NotConnected -> throw LoginGateway.ConnectionFailure()
 
@@ -54,12 +56,19 @@ class VpnSdkLoginGateway(
                     VpnAccount.LoginResponse.InvalidAccessToken,
                     VpnAccount.LoginResponse.ExpiredAccessToken,
                     VpnAccount.LoginResponse.ExpiredRefreshToken,
-                    VpnAccount.LoginResponse.InvalidApiKey,
+                    is VpnAccount.LoginResponse.InvalidApiKey,
                     VpnAccount.LoginResponse.UnableToRefreshToken,
                     VpnAccount.LoginResponse.InvalidVpnSdkApiConfig ->
                         throw LoginGateway.NotAuthorizedFailure()
 
-                    TooManyAttempts -> throw LoginGateway.TooManyRequests()
+                    is TooManyAttempts -> throw LoginGateway.TooManyRequests()
+
+                    VpnAccount.LoginResponse.EmptyAppUserId,
+                    VpnAccount.LoginResponse.EmptyTransactionId,
+                    is VpnAccount.LoginResponse.UnableToFindCustomer,
+                    is InvalidAppUserId,
+                    is AccountNotDeferred ->
+                        throw LoginGateway.UnexpectedFailure()
 
                     is UnableToLogin -> throw LoginGateway.UnexpectedFailure(
                         message = it.throwable?.javaClass?.canonicalName ?: ""
