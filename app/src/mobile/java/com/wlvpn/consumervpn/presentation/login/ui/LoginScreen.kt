@@ -1,10 +1,12 @@
 package com.wlvpn.consumervpn.presentation.login.ui
 
 import android.content.res.Configuration
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -33,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -179,13 +182,20 @@ fun LoginScreen(
                         )
                     )
             ) {
+                val imageShape =
+                    if (booleanResource(R.bool.theme_dark_theme_only) || isSystemInDarkTheme()) {
+                        R.drawable.ic_bg_shapes_dark
+                    } else {
+                        R.drawable.ic_bg_shapes_light
+                    }.run { painterResource(id = this) }
+
                 if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                     if (isTablet()) {
                         Image(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomStart),
-                            painter = painterResource(id = R.drawable.ic_bg_shapes),
+                            painter = imageShape,
                             contentDescription = null,
                             contentScale = ContentScale.FillWidth
                         )
@@ -195,7 +205,7 @@ fun LoginScreen(
                                 .height(280.dp)
                                 .fillMaxWidth()
                                 .align(Alignment.BottomStart),
-                            painter = painterResource(id = R.drawable.ic_bg_shapes),
+                            painter = imageShape,
                             contentDescription = null,
                             contentScale = ContentScale.FillWidth
                         )
@@ -205,7 +215,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomStart),
-                        painter = painterResource(id = R.drawable.ic_bg_shapes),
+                        painter = imageShape,
                         contentDescription = null,
                         contentScale = ContentScale.FillWidth
                     )
@@ -219,11 +229,6 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    if (displayMessage) {
-                        showToast(message = message)
-                        displayMessage = false
-                    }
 
                     val localFocusManager = LocalFocusManager.current
 
@@ -250,6 +255,14 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
+                    if (displayMessage) {
+                        LoginErrorLabel(
+                            modifier = Modifier,
+                            text = message,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
                     val emptyUsernameError = state == LoginEvent.EmptyUsername
 
                     LoginTextField(
@@ -258,7 +271,7 @@ fun LoginScreen(
                             .padding(horizontal = 16.dp),
                         value = username,
                         label = stringResource(id = R.string.login_screen_username_hint),
-                        showError = emptyUsernameError,
+                        showError = emptyUsernameError || displayMessage,
                         trailingIcon = { },
                         leadingIcon = {
                             IconButton(
@@ -294,7 +307,7 @@ fun LoginScreen(
                             .padding(horizontal = 16.dp),
                         value = password,
                         label = stringResource(id = R.string.login_screen_password_hint),
-                        showError = emptyPasswordError,
+                        showError = emptyPasswordError || displayMessage,
                         visualTransformation = if (passwordVisible) VisualTransformation.None
                         else PasswordVisualTransformation(),
                         trailingIcon = {
@@ -338,14 +351,18 @@ fun LoginScreen(
                         )
                     }
 
-                    ClickableText(
+                    val forgotPasswordInteractionSource = remember { MutableInteractionSource() }
+                    Text(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .widthIn(
-                                min = 280.dp,
-                                max = 380.dp
-                            )
-                            .fillMaxWidth(),
+                            .align(alignment = Alignment.End)
+                            .clickable(
+                                interactionSource = forgotPasswordInteractionSource,
+                                indication = ripple()
+                            ) {
+                                displayMessage = false
+                                onForgotPassword()
+                            }
+                            .padding(horizontal = 16.dp),
                         text = AnnotatedString(
                             stringResource(id = R.string.login_screen_forgot_password)
                         ),
@@ -353,9 +370,6 @@ fun LoginScreen(
                             textAlign = TextAlign.End,
                             color = LocalColors.current.extendedColors.clickableTextColor
                         ),
-                        onClick = {
-                            onForgotPassword()
-                        },
                     )
 
                     Button(
@@ -368,6 +382,7 @@ fun LoginScreen(
                         },
                         colors = ButtonDefaults.filledTonalButtonColors(),
                         onClick = {
+                            displayMessage = false
                             localFocusManager.clearFocus()
                             viewModel.login(username, password)
                             interactionStarted = true
@@ -389,8 +404,13 @@ fun LoginScreen(
                             style = MaterialTheme.typography.bodyMedium
                         )
 
-                        ClickableText(
+                        val signUpInteractionSource = remember { MutableInteractionSource() }
+                        Text(
                             modifier = Modifier
+                                .clickable(
+                                    interactionSource = signUpInteractionSource,
+                                    indication = ripple()
+                                ) { onSignUp() }
                                 .padding(horizontal = 16.dp),
                             text = AnnotatedString(
                                 stringResource(id = R.string.login_screen_sign_up)
@@ -398,9 +418,6 @@ fun LoginScreen(
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = LocalColors.current.extendedColors.clickableTextColor
                             ),
-                            onClick = {
-                                onSignUp()
-                            },
                         )
                     }
                 }
@@ -425,13 +442,4 @@ fun LoginScreen(
             }
         }
     )
-}
-
-@Composable
-fun showToast(message: String) {
-    Toast.makeText(
-        LocalContext.current,
-        message,
-        Toast.LENGTH_LONG
-    ).show()
 }

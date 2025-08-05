@@ -92,13 +92,30 @@ Despite its advantages, there are a few limitations:
 
 ### Prerequisites
 
-1. Android Studio 2021.1.1 (Bumblebee)
+1. Android Studio 2024.3.2 (Meerkat)
 2. Java 17
 
 ### OS Requirements
 
 1. Minimum Android SDK 25 (Android 7.1+).
 2. Currently supports Android SDK 34 (Android 14 Upside-down cake).
+
+### Application ID
+
+To ensure your application is uniquely identifiable on **Google Play** and on user devices, 
+you need to set a unique Application ID. This ID should ideally reflect your brand or company name. 
+Once you publish your app with a specific Application ID, you should never change it, as Google Play 
+will treat any subsequent upload with a different ID as a completely new application.
+
+Here's how to correctly set your Application ID:
+
+1. Open your module-level build.gradle.kts [file](../app/build.gradle.kts) 
+2. Locate the `applicationId` property within the defaultConfig block: Inside the android { ... } 
+block, `applicationId = "com.wlvpn.consumervpn"` 
+3. Change the applicationId string to your unique identifier; Replace the existing value 
+(e.g., "com.example.myapp" or a sample app's ID like "com.wlvpn.consumervpn") with your desired 
+Application ID. A common convention is to use a reverse domain name style,
+like com.yourcompany.yourbrand: `applicationId = "com.<company>.<brand>"`
 
 ### VPN SDK Keys Setup
 
