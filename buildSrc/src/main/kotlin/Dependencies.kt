@@ -114,7 +114,7 @@ object Dependencies {
     val vpnModule = Dependency(
         group = "com.gentlebreeze.vpn.module",
         module = "VPNModule-API",
-        version = "2.12.152111"
+        version = "2.12.274436-SNAPSHOT"
     )
     val vpnModuleOpenVPN = Dependency(
         group = vpnModule.group,
@@ -136,17 +136,17 @@ object Dependencies {
     val nativeOpenVpn = Dependency(
         group = "com.gentlebreeze.vpn.openvpn",
         module = "NativeOpenVPN",
-        version = "2.1.080291@aar"
+        version = "2.1.0274434-SNAPSHOT@aar"
     )
     val nativeStrongSwan = Dependency(
         group = "com.gentlebreeze.vpn.strongswan",
         module = "NativeStrongSwan",
-        version = "2.3.0144649"
+        version = "2.3.0272179-SNAPSHOT"
     )
     val nativeWireGuard = Dependency(
         group = "com.netprotect.nativewireguard",
         module = "NativeWireGuard",
-        version = "1.0.20211029.136613"
+        version = "1.0.20211029.492.271585"
     )
 
     // Ok Interceptors
@@ -217,7 +217,7 @@ object Dependencies {
         Dependency(
             group = "com.netprotect.nativencrkeyption",
             module = "nativencrkeyption",
-            version = "1.1.0140581-SNAPSHOT"
+            version = "1.1.0272171-SNAPSHOT"
         )
 
     // DataStore
@@ -510,7 +510,7 @@ object Dependencies {
     val vpnSdk = Dependency(
         group = "com.wlvpn.vpnsdk",
         module = "sdkv2",
-        version = "2.4.0.269790"
+        version = "2.5.0.274552"
     )
 
     val desugaringJavaApi = Dependency(
