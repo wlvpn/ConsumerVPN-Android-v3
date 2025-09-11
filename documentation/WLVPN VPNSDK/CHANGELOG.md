@@ -1,11 +1,24 @@
 # VPN SDK Changelog
 
+## VPN SDK v2.5.0
+
+## Improvements
+
+- Adds 16KB Page Size support
+
+## VPN SDK v2.4.1
+
+### New Items
+- Adds Api.mirrorDelay
+
 ## VPN SDK v2.4.0
 
 ## Improvements
 - Upgrades Android target SDK and compile SDK to 35
 - Upgrades Gradle Wrapper from 8.0.1 to 8.14.3
 - Upgrades Java compatibility to Java 17
+- The after-connection health check now uses a built-in ping mechanism. The Android Inet ping has
+  been deprecated on Android 35
 
 ### New Items
 - Adds LoginRequest.WithAppUserId for VpnAccount.login
@@ -42,12 +55,12 @@
 - Adds a new SDK configuration to allow client to set a fallback Geo location:
 ```kotlin
 VpnSdk.setup(
-  ... //configuration,
-geoLocationFallback = GeoLocationFallback(
-  countryCode = "US",
-  latitude = 39.8283,
-  longitude = -98.5795,
-)
+    ... //configuration,
+   geoLocationFallback = GeoLocationFallback(
+     countryCode = "US",
+     latitude = 39.8283,
+     longitude = -98.5795,
+   )
 )
 ```
 
