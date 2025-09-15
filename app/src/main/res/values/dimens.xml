@@ -73,7 +73,6 @@
     <!-- Connection Tab -->
     <dimen name="home_connection_progress_connection_size">120dp</dimen>
     <dimen name="home_connection_ic_connected_size">120dp</dimen>
-    <dimen name="home_connection_map_box_padding_top">200dp</dimen>
     <dimen name="home_connection_connection_box_padding_top">200dp</dimen>
     <dimen name="home_connection_button_width">192dp</dimen>
     <dimen name="home_connection_informative_min_width">190dp</dimen>

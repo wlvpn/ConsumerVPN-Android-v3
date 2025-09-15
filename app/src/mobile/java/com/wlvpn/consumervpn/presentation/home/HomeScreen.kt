@@ -1,6 +1,5 @@
 package com.wlvpn.consumervpn.presentation.home
 
-import android.content.res.Configuration
 import android.net.VpnService
 import android.os.Build
 import android.widget.Toast
@@ -11,6 +10,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -203,21 +202,21 @@ inline fun ConnectedContent(
     server: ServerLocation.Server?,
     crossinline onDisconnectClick: () -> Unit
 ) {
-    val orientation = LocalConfiguration.current.orientation
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.weight(1f))
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     start = dimensionResource(id = dimen.spacing_xlarge),
                     end = dimensionResource(id = dimen.spacing_xlarge),
-                    top = if (orientation == Configuration.ORIENTATION_PORTRAIT)
-                        dimensionResource(id = dimen.home_connection_map_box_padding_top)
-                    else dimensionResource(id = dimen.spacing_small)
+                    top = dimensionResource(id = dimen.spacing_small)
                 )
         ) {
             Image(
@@ -238,7 +237,6 @@ inline fun ConnectedContent(
 
         Column(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
                 .wrapContentWidth()
         ) {
             InformativeRow(
@@ -266,7 +264,6 @@ inline fun ConnectedContent(
 
         DisconnectButton(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
                 .padding(
                     top = dimensionResource(id = dimen.spacing_normal),
                     bottom = dimensionResource(id = dimen.spacing_xxlarge),
