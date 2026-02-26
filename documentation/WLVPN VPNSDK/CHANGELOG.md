@@ -1,5 +1,15 @@
 # VPN SDK Changelog
 
+## VPN SDK v2.6.2
+
+## Improvements
+
+- Updated the OpenVPN connection response to align with other protocols. Previously,
+  it returned a generic InvalidSession for token-related errors; it now returns the specific
+  error (e.g., InvalidAccessToken, ExpiredAccessToken, ExpiredRefreshToken).
+- Updated the OpenVPN protocol to automatically refresh the token if an authentication error
+  occurs after a connection is established.
+
 ## VPN SDK v2.6.1
 
 ## Improvements
