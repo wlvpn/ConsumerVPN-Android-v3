@@ -1,5 +1,27 @@
 # VPN SDK Changelog
 
+## VPN SDK v2.6.1
+
+## Improvements
+- Adds 'VpnConnectionResponse.ServerUnhealthy(...)', responses to the
+  'VpnConnection.connectToVpn()' feature; when trying to connect using WireGuard and
+  the server is unhealthy/unavailable(not found) one of these responses will be sent throw the flow.
+  Additionally, the server will be removed from server list to let the load balancer to pick another
+  available server.
+- Upgrade WireGuard's GO to version '1.22.3'
+
+## VPN SDK v2.6.0
+
+### New Items
+
+- Adds 'features' property to 'Location.Server', this is a set with the available features of the
+  server (currently RamOnly is the only one supported)
+- Adds 'isVirtual' property to 'Location.City', indicates if this city (and its servers) are virtual.
+- Adds 'ByFeatures' and 'ByVirtual' classes to 'FindCityOptions'
+- Adds 'features' property to 'ByName', 'ByCountry', 'ByCity' in 'FindServerOptions'
+- Adds 'serverFeatures' argument to 'VpnConnection.connectToVpn(...)', this is used filter the server
+  candidates in the load balancer (currently, only available  to City locations).
+
 ## VPN SDK v2.5.0
 
 ## Improvements
