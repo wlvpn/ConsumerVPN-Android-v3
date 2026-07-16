@@ -1,36 +1,127 @@
 # VPN SDK Changelog
 
+## VPN SDK v2.8.1
+
+## Improvements
+- Upgrades Android target SDK and compile SDK to 36
+
+### New Items 
+- Upgrades OpenVpn support version to 2.6, this is an internal change with transparent for clients.
+
+## Improvements
+- Fixes an edge case where the OpenVpn service could crash when the service automatically restarts
+it.
+- Improves PossiblePortBlocked validation, changed the port validation from TCP to UDP, changed
+the timeout from 3 to 10 seconds.
+
+## VPN SDK v2.8.0
+
+### New Items
+- Added reverse split tunneling. App-based split tunneling is now controlled by a new
+`SplitTunnelMode` sealed class on every `VpnProtocolSettings` variant
+(`WireGuard`, `OpenVpn`, `IKEv2`):
+  - `SplitTunnelMode.Disabled` *(default)* — all app traffic routes through the VPN.
+  - `SplitTunnelMode.DisallowedApps(apps)` — listed apps bypass the VPN; everything else
+  routes through the VPN. Equivalent to the previous `splitTunnelApps` behavior.
+  - `SplitTunnelMode.AllowedApps(apps)` — only listed apps route through the VPN; everything
+  else bypasses the VPN. New reverse split tunneling mode.
+
+### Breaking Changes
+- The `splitTunnelApps: List<String>` field on `VpnProtocolSettings.WireGuard`,
+`VpnProtocolSettings.OpenVpn`, and `VpnProtocolSettings.IKEv2` has been replaced by
+`splitTunnelMode: SplitTunnelMode`. Migrate by wrapping existing lists with
+`SplitTunnelMode.DisallowedApps(...)`, or pass `SplitTunnelMode.Disabled` when no app split
+tunneling is desired. `DisallowedApps` with an empty list is equivalent to `Disabled`
+(all traffic routes through the VPN). `AllowedApps` with an empty list keeps its literal
+meaning: no app traffic routes through the VPN (only the SDK host package, which is always
+tunneled).
+
+  ```kotlin
+  // Before
+  splitTunnelApps = listOf("com.example.app")
+
+  // After
+  splitTunnelMode = SplitTunnelMode.DisallowedApps(listOf("com.example.app"))
+
+  // Before
+  splitTunnelApps = emptyList()
+
+  // After
+  splitTunnelMode = SplitTunnelMode.Disabled
+  ```
+
+## VPN SDK v2.7.2
+
+### New Items
+- Added `QuantumResistantMode` to `VpnProtocolSettings.WireGuard`, allowing clients to control
+the quantum resistant behaviour per connection:
+  - `QuantumResistantMode.Enabled` — quantum resistant is attempted; the connection
+  proceeds without it if it fails.
+  - `QuantumResistantMode.Disabled` *(default)* — quantum resistant is skipped entirely.
+  - `QuantumResistantMode.DisconnectOnFailure` — quantum resistant is attempted; the VPN is
+  disconnected and `ConnectToVpnResponse.UnableToQuantumEncryptConnectionFailure` is emitted on
+  failure.
+
+### Breaking Changes
+- Clients must add the following exclusion to their app `build.gradle` under
+  `android.packaging.resources` to avoid a build failure caused by Bouncy Castle's
+  duplicate `OSGI-INF/MANIFEST.MF` (pulled in transitively by the quantum encryption
+  dependency):
+
+  ```kotlin
+  android {
+      packaging {
+          resources {
+              excludes += "/META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+          }
+      }
+  }
+  ```
+
+## VPN SDK v2.7.1
+
+## Improvements
+- Fixes 'VpnConnection.getConnectionInfo()' returning OpenVpn when connected to Double hop WireGuard
+
+## VPN SDK v2.7.0
+
+### New Items
+-  Added a quantum resistance encryption for WireGuard connections, no actions needed for clients
+to support it.
+- Added 'ConnectToVpnResponse.UnableToQuantumEncryptConnection' response to the 
+`VpnConnection.connectToVpn()` feature.
+
 ## VPN SDK v2.6.2
 
 ## Improvements
 
-- Updated the OpenVPN connection response to align with other protocols. Previously,
-  it returned a generic InvalidSession for token-related errors; it now returns the specific
-  error (e.g., InvalidAccessToken, ExpiredAccessToken, ExpiredRefreshToken).
-- Updated the OpenVPN protocol to automatically refresh the token if an authentication error
-  occurs after a connection is established.
+- Updated the OpenVPN connection response to align with other protocols. Previously, 
+it returned a generic InvalidSession for token-related errors; it now returns the specific 
+error (e.g., InvalidAccessToken, ExpiredAccessToken, ExpiredRefreshToken).
+- Updated the OpenVPN protocol to automatically refresh the token if an authentication error 
+occurs after a connection is established.
 
 ## VPN SDK v2.6.1
 
 ## Improvements
-- Adds 'VpnConnectionResponse.ServerUnhealthy(...)', responses to the
-  'VpnConnection.connectToVpn()' feature; when trying to connect using WireGuard and
-  the server is unhealthy/unavailable(not found) one of these responses will be sent throw the flow.
-  Additionally, the server will be removed from server list to let the load balancer to pick another
-  available server.
-- Upgrade WireGuard's GO to version '1.22.3'
+ - Adds 'VpnConnectionResponse.ServerUnhealthy(...)', responses to the 
+'VpnConnection.connectToVpn()' feature; when trying to connect using WireGuard and 
+the server is unhealthy/unavailable(not found) one of these responses will be sent throw the flow.
+Additionally, the server will be removed from server list to let the load balancer to pick another
+available server.
+ - Upgrade WireGuard's GO to version '1.22.3'
 
 ## VPN SDK v2.6.0
 
 ### New Items
 
-- Adds 'features' property to 'Location.Server', this is a set with the available features of the
-  server (currently RamOnly is the only one supported)
+- Adds 'features' property to 'Location.Server', this is a set with the available features of the 
+server (currently RamOnly is the only one supported)
 - Adds 'isVirtual' property to 'Location.City', indicates if this city (and its servers) are virtual.
 - Adds 'ByFeatures' and 'ByVirtual' classes to 'FindCityOptions'
 - Adds 'features' property to 'ByName', 'ByCountry', 'ByCity' in 'FindServerOptions'
 - Adds 'serverFeatures' argument to 'VpnConnection.connectToVpn(...)', this is used filter the server
-  candidates in the load balancer (currently, only available  to City locations).
+candidates in the load balancer (currently, only available  to City locations).
 
 ## VPN SDK v2.5.0
 
@@ -46,11 +137,11 @@
 ## VPN SDK v2.4.0
 
 ## Improvements
-- Upgrades Android target SDK and compile SDK to 35
+- Upgrades Android target SDK and compile SDK to 35 
 - Upgrades Gradle Wrapper from 8.0.1 to 8.14.3
 - Upgrades Java compatibility to Java 17
-- The after-connection health check now uses a built-in ping mechanism. The Android Inet ping has
-  been deprecated on Android 35
+- The after-connection health check now uses a built-in ping mechanism. The Android Inet ping has 
+been deprecated on Android 35
 
 ### New Items
 - Adds LoginRequest.WithAppUserId for VpnAccount.login
@@ -58,21 +149,21 @@
 
 ### Breaking Changes
 - The following responses in LoginResponse have been converted from object to data class:
-  InvalidCredentials, TooManyAttempts, InvalidApiKey
+  InvalidCredentials, TooManyAttempts, InvalidApiKey 
 
 ## VPN SDK v2.3.8
 
 ## Improvements
 - Improves the restart VPN feature that mitigates notifications not dismissing after the app is
-  force closed (either by OS o memory)
+force closed (either by OS o memory)
 
 
 ## VPN SDK v2.3.7
 
 ### New Items
 
-- VPN service now correctly restarts after the OS kills it due low memory or any other unexpected
-  scenario.
+- VPN service now correctly restarts after the OS kills it due low memory or any other unexpected 
+scenario.
 
 ### Breaking Changes
 
@@ -140,7 +231,7 @@ VpnSdk.setup(
 - Improves refresh token management.
 
 ### New Items
-- Introduces a new response for the `VpnConnection.connect` feature:
+- Introduces a new response for the `VpnConnection.connect` feature: 
   - `ConnectToVpnResponse.PossiblePortBlockedFailure`: Returned if the local network is possibly blocking the necessary ports to have a successful connection.(Only for WireGuard)
 
 ## VPN SDK v2.3.1
@@ -190,7 +281,7 @@ VpnSdk.setup(
 
 ### Improvements
 - Fixed incorrect Innactive account messages on VPN connections
-- Improved API fallback mechanism
+- Improved API fallback mechanism 
 
 ### Breaking Changes
 - None.

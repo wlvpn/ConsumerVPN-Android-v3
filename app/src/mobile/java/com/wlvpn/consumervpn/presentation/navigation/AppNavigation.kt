@@ -1,6 +1,7 @@
 package com.wlvpn.consumervpn.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +58,13 @@ fun AppNavigation(
                 onBackPressed = { closeApp() },
                 startConnection = homeScreenStartConnection,
             )
-            homeScreenStartConnection = false
+
+            // Reset state safely after the composition completes
+            LaunchedEffect(homeScreenStartConnection) {
+                if (homeScreenStartConnection) {
+                    homeScreenStartConnection = false
+                }
+            }
         }
 
         composable(route = Routes.Locations.route) {

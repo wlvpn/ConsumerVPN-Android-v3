@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -91,8 +92,11 @@ inline fun LocationsScreen(
         else -> {}
     }
 
-    if (saveLocationEvent is LocationsEvent.SelectedLocationSaved){
-        onConnect()
+    if (saveLocationEvent is LocationsEvent.SelectedLocationSaved) {
+        // Fire the navigation once per save event instead of on every recomposition
+        LaunchedEffect(saveLocationEvent) {
+            onConnect()
+        }
     }
 
     Box(
