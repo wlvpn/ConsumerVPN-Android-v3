@@ -121,6 +121,12 @@ android {
             // OpenVPN does not work without this when is run through an aab bundle
             useLegacyPackaging = true
         }
+        resources {
+            // Resolves build failure during ':app:mergeMobileDebugJavaResource'
+            // Both BouncyCastle (bcprov) and JSpecify include this MANIFEST.MF file.
+            // Excluding it prevents the DuplicateRelativeFileException and does not affect runtime.
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
     }
 }
 

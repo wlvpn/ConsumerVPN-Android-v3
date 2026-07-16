@@ -15,7 +15,7 @@ object BuildPlugins {
     )
     val composeCompiler = Dependency(
         module="org.jetbrains.kotlin.plugin.compose",
-        version = "2.0.0"
+        version = "2.2.0"
     )
     val detekt = Dependency(
         module = "io.gitlab.arturbosch.detekt",
@@ -48,7 +48,7 @@ object BuildPlugins {
     val ciUtilsPlugin = Dependency(
         group = "com.gentlebreeze.gradle",
         module = "ci-utils",
-        version = "1.5.0.146759"
+        version = "1.5.0.245426"
     )
 
     val slackUtilsPlugin = Dependency(
@@ -67,7 +67,7 @@ object BuildPlugins {
     val dokka = Dependency(
         group = "org.jetbrains.dokka",
         module = "dokka-gradle-plugin",
-        version = "1.7.10"
+        version = "1.9.20"
     )
     const val dokkaApplyName = "org.jetbrains.dokka"
 
@@ -79,12 +79,12 @@ object BuildPlugins {
 
     val googleServicesPlugin = Dependency(
         module = "com.google.gms.google-services",
-        version = "4.3.15"
+        version = "4.4.2"
     )
 
     val crashlyticsPlugin = Dependency(
         module = "com.google.firebase.crashlytics",
-        version = "2.9.9"
+        version = "3.0.3"
     )
 
     val kotlinxSerialization = Dependency(
@@ -96,8 +96,8 @@ object BuildPlugins {
 object AndroidSdk {
 
     const val minSdk = 25
-    const val targetSdk = 35
-    const val compileSdk = 35
+    const val targetSdk = 36
+    const val compileSdk = 36
     const val namespace = "com.wlvpn.consumervpn"
 }
 
@@ -107,14 +107,14 @@ object Dependencies {
     val kotlinCore = Dependency(
         group = "androidx.core",
         module = "core-ktx",
-        version = "1.9.0"
+        version = "1.17.0"
     )
 
     // VPN Module
     val vpnModule = Dependency(
         group = "com.gentlebreeze.vpn.module",
         module = "VPNModule-API",
-        version = "2.12.274436-SNAPSHOT"
+        version = "2.12.338913"
     )
     val vpnModuleOpenVPN = Dependency(
         group = vpnModule.group,
@@ -136,31 +136,31 @@ object Dependencies {
     val nativeOpenVpn = Dependency(
         group = "com.gentlebreeze.vpn.openvpn",
         module = "NativeOpenVPN",
-        version = "2.1.0274434-SNAPSHOT@aar"
+        version = "2.1.0338542@aar"
     )
     val nativeStrongSwan = Dependency(
         group = "com.gentlebreeze.vpn.strongswan",
         module = "NativeStrongSwan",
-        version = "2.3.0272179-SNAPSHOT"
+        version = "2.3.0338621"
     )
     val nativeWireGuard = Dependency(
         group = "com.netprotect.nativewireguard",
         module = "NativeWireGuard",
-        version = "1.0.20211029.492.271585"
+        version = "1.0.20211029.492.338623"
     )
 
     // Ok Interceptors
     val okInterceptors = Dependency(
         group = "com.netprotect.okinterceptors",
         module = "lib",
-        version = "1.0.139243"
+        version = "1.0.338624"
     )
 
     // Retrofit
     val retrofit = Dependency(
         group = "com.squareup.retrofit2",
         module = "retrofit",
-        version = "2.9.0"
+        version = "2.11.0"
     )
 
     val retrofitMoshiConverter = Dependency(
@@ -217,14 +217,14 @@ object Dependencies {
         Dependency(
             group = "com.netprotect.nativencrkeyption",
             module = "nativencrkeyption",
-            version = "1.1.0272171-SNAPSHOT"
+            version = "1.1.0338543"
         )
 
     // DataStore
     val dataStoreProto = Dependency(
         group = "androidx.datastore",
         module = "datastore",
-        version = "1.0.0"
+        version = "1.1.2"
     )
     val dataStorePreferences = Dependency(
         group = dataStoreProto.group,
@@ -241,19 +241,19 @@ object Dependencies {
     val protoBuff = Dependency(
         group = "com.google.protobuf",
         module = "protobuf-javalite",
-        version = "3.18.0"
+        version = "4.28.3"
     )
     val protoBuffArtifact = Dependency(
         group = protoBuff.group,
         module = "protoc",
-        version = "3.17.3"
+        version = "4.28.3"
     )
 
     // Mockk
     val mockk = Dependency(
         group = "io.mockk",
         module = "mockk",
-        version = "1.13.3"
+        version = "1.14.4"
     )
 
     // Junit
@@ -277,7 +277,7 @@ object Dependencies {
     val lifecycle = Dependency(
         group = "androidx.lifecycle",
         module = "lifecycle-runtime-ktx",
-        version = "2.6.0"
+        version = "2.8.7"
     )
 
     val lifecycleRuntimeCompose = Dependency(
@@ -293,7 +293,7 @@ object Dependencies {
 
     // Compose
     val compose = Dependency(
-        version = "2.0.0"
+        version = "2.2.0"
     )
 
     val composeRuntime = Dependency(
@@ -309,7 +309,7 @@ object Dependencies {
     val composeBom = Dependency(
         group = "androidx.compose",
         module = "compose-bom",
-        version = "2024.12.01"
+        version = "2025.05.01"
     )
 
     val composeUi = Dependency(
@@ -355,13 +355,13 @@ object Dependencies {
     val composeActivity = Dependency(
         group = "androidx.activity",
         module = "activity-compose",
-        version = "1.9.2"
+        version = "1.10.1"
     )
 
     val composeNavigation = Dependency(
         group = "androidx.navigation",
         module = "navigation-compose",
-        version = "2.5.2"
+        version = "2.8.9"
     )
 
     val composeLottie = Dependency(
@@ -391,7 +391,7 @@ object Dependencies {
     val coil = Dependency(
         group = "io.coil-kt",
         module = "coil-compose",
-        version = "2.4.0"
+        version = "2.7.0"
     )
 
     val accompanistSwipeRefresh = Dependency(
@@ -422,13 +422,12 @@ object Dependencies {
     val materialAndroid = Dependency(
         group = "com.google.android.material",
         module = "material",
-        version = "1.7.0"
+        version = "1.12.0"
     )
 
     val googleFont = Dependency(
         group = "androidx.compose.ui",
         module = "ui-text-google-fonts",
-        version = "1.7.0"
     )
     
     //Hilt
@@ -447,7 +446,7 @@ object Dependencies {
     val hiltCompiler = Dependency(
         group = "androidx.hilt",
         module = "hilt-compiler",
-        version = "1.0.0"
+        version = "1.2.0"
     )
 
     val hiltNavigationCompose = Dependency(
@@ -460,19 +459,19 @@ object Dependencies {
     val splashScreen = Dependency(
         group = kotlinCore.group,
         module = "core-splashscreen",
-        version = "1.0.0"
+        version = "1.0.1"
     )
 
     val coroutinesAndroid = Dependency(
         group = "org.jetbrains.kotlinx",
         module = "kotlinx-coroutines-android",
-        version = "1.6.4"
+        version = "1.10.2"
     )
 
     val firebase = Dependency(
         group = "com.google.firebase",
         module = "firebase-bom",
-        version = "32.3.1"
+        version = "33.14.0"
     )
 
     val firebaseCrashlytics = Dependency(
@@ -490,7 +489,7 @@ object Dependencies {
     val leakCanary = Dependency(
         group = "com.squareup.leakcanary",
         module = "leakcanary-android",
-        version = "2.12"
+        version = "2.14"
     )
 
     // Logback
@@ -510,7 +509,7 @@ object Dependencies {
     val vpnSdk = Dependency(
         group = "com.wlvpn.vpnsdk",
         module = "sdkv2",
-        version = "2.6.2.307304"
+        version = "2.8.1.338955"
     )
 
     val desugaringJavaApi = Dependency(

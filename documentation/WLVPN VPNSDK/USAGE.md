@@ -20,6 +20,7 @@
     5. [Partner DNS Settings](#partner-dns-settings) 
     6. [Token based authentication](#token-based-authentication)
     7. [Multihop connection](#multihop-connection)
+    8. [Quantum Resistant](#quantum-resistant)
 6. [Default Geolocation settings](#default-geolocation-settings)
 
 ## Kotlin's Flow and threading
@@ -29,7 +30,7 @@
 All of the SDK's methods return a Kotlin's Flow object, with no dispatchers set to let the client
 decide when to use them upon collecting the flow.
 
-Additionally, almost all methods only emit one status (some exceptions include `lisetToVpnState()`), 
+Additionaly, almost all methods only emit one status (some exceptions include `lisetToVpnState()`), 
 is recommended to use `.first()` or `.firstOrNull()` to ensure the
 Flow is stopped after the first emission is finished.
 
@@ -322,7 +323,7 @@ val serversInDallas: List<Location.Server> =
 // Wireguard settings
 val wireGuardSettings = VpnProtocolSettings.WireGuard(
     allowLan = true,
-    splitTunnelApps = emptyList(),
+    splitTunnelMode = SplitTunnelMode.Disabled,
     splitTunnelDomains = emptyList(),
     dns = DnsSettings.Default,
     authMode = WireGuardAuthMode.BearerToken
@@ -331,7 +332,7 @@ val wireGuardSettings = VpnProtocolSettings.WireGuard(
 // IKEv2 settings
 val ikev2Settings = VpnProtocolSettings.IKEv2(
     allowLan = true,
-    splitTunnelApps = emptyList(),
+    splitTunnelMode = SplitTunnelMode.Disabled,
     splitTunnelDomains = emptyList(),
     dns = DnsSettings.Default
 )
@@ -339,7 +340,7 @@ val ikev2Settings = VpnProtocolSettings.IKEv2(
 // OpenVpn Settings
 val openVpnSettings = VpnProtocolSettings.OpenVpn(
     allowLan = true,
-    splitTunnelApps = emptyList(),
+    splitTunnelMode = SplitTunnelMode.Disabled,
     splitTunnelDomains = emptyList(),
     dns = DnsSettings.Default,
     port = 443,
@@ -454,7 +455,7 @@ The partner DNS can be selected upon creating a connection:
 ```kotlin
 val wireGuardSettings = VpnProtocolSettings.WireGuard(
     allowLan = true,
-    splitTunnelApps = emptyList(),
+    splitTunnelMode = SplitTunnelMode.Disabled,
     splitTunnelDomains = emptyList(),
     dns = DnsSettings.Partner,   //  -> Partner DNS
     authMode = WireGuardAuthMode.BearerToken
@@ -544,7 +545,7 @@ val exitCityRequest = LocationRequest.ByCityName(
 // Multihop is available in OpenVPN and WireGuard only
 val wireguardSettings = VpnProtocolSettings.WireGuard(
     allowLan = true,
-    splitTunnelApps = emptyList(),
+    splitTunnelMode = SplitTunnelMode.Disabled,
     splitTunnelDomains = emptyList(),
     dns = DnsSettings.Default,  
     authMode = WireGuardAuthMode.BearerToken,
@@ -590,6 +591,84 @@ when(connectionInfo){
 2. The OpenVPN port and scramble settings are ignored when Multihop is enabled.
 3. When using Nearest or Country as entry location, the best/nearest city will be used, for Server
 location, its city will be used.
+
+### Quantum Resistant
+
+Quantum Resistant adds a post-quantum pre-shared key to a WireGuard connection using MLKEM
+key exchange, making the tunnel resistant to future quantum attacks. It is configured via the
+`quantumResistantMode` field on `VpnProtocolSettings.WireGuard` (and its Multihop variant). The
+field defaults to `QuantumResistantMode.Disabled`.
+
+There are three modes:
+
+| Mode | Behaviour |
+|---|---|
+| `QuantumResistantMode.Enabled` | Quantum resistant key exchange is attempted. If it fails, the connection proceeds without it. |
+| `QuantumResistantMode.Disabled` | Quantum resistant key exchange is skipped entirely. |
+| `QuantumResistantMode.DisconnectOnFailure` | Quantum resistant key exchange is attempted. If it fails, the VPN is disconnected and `ConnectToVpnResponse.UnableToMakeConnectionQuantumResistant` is emitted. |
+
+```kotlin
+// Attempt quantum resistant key exchange, continue on failure
+val settings = VpnProtocolSettings.WireGuard(
+    allowLan = true,
+    splitTunnelMode = SplitTunnelMode.Disabled,
+    splitTunnelDomains = emptyList(),
+    dns = DnsSettings.Default,
+    authMode = WireGuardAuthMode.BearerToken,
+    multihopConnection = MultihopConnection.Disabled,
+    quantumResistantMode = QuantumResistantMode.Enabled
+)
+
+// Strict — disconnect if quantum resistant key exchange fails
+val strictSettings = VpnProtocolSettings.WireGuard(
+    allowLan = true,
+    splitTunnelMode = SplitTunnelMode.Disabled,
+    splitTunnelDomains = emptyList(),
+    dns = DnsSettings.Default,
+    authMode = WireGuardAuthMode.BearerToken,
+    multihopConnection = MultihopConnection.Disabled,
+    quantumResistantMode = QuantumResistantMode.DisconnectOnFailure
+)
+
+// Disabled (default) — skip quantum resistant key exchange entirely
+val noQrSettings = VpnProtocolSettings.WireGuard(
+    allowLan = true,
+    splitTunnelMode = SplitTunnelMode.Disabled,
+    splitTunnelDomains = emptyList(),
+    dns = DnsSettings.Default,
+    authMode = WireGuardAuthMode.BearerToken,
+    multihopConnection = MultihopConnection.Disabled,
+    quantumResistantMode = QuantumResistantMode.Disabled  // default, can be omitted
+)
+```
+
+Handle the failure response when using `DisconnectOnFailure`:
+
+```kotlin
+vpnConnection.connectToVpn(
+    locationRequest = locationRequest,
+    vpnProtocolSettings = strictSettings
+).map { response ->
+    when (response) {
+        ConnectToVpnResponse.Success -> // connected, tunnel is quantum resistant
+
+        is ConnectToVpnResponse.UnableToMakeConnectionQuantumResistant -> {
+            // Quantum resistant key exchange failed — VPN was disconnected automatically
+            val cause = response.throwable
+            // `reason` is a diagnostic string for logs/telemetry (not a localized
+            // user-facing message). It is prefixed with the server city tag, e.g.
+            // "[City Amsterdam]: <message>" (single-hop) or
+            // "[Entry: Amsterdam Exit: New York]: <message>" (multi-hop).
+            val diagnostics = response.reason
+        }
+
+        else -> // other failures
+    }
+}.first()
+```
+
+> **NOTE**: Quantum Resistant is only available for WireGuard connections (single-hop and
+> Multihop). It has no effect on OpenVPN or IKEv2.
 
 # Default Geolocation settings
 

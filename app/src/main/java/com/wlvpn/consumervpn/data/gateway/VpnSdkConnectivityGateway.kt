@@ -37,6 +37,8 @@ import com.wlvpn.vpnsdk.domain.value.Location
 import com.wlvpn.vpnsdk.domain.value.Location.Nearest
 import com.wlvpn.vpnsdk.domain.value.LocationRequest
 import com.wlvpn.vpnsdk.domain.value.MultihopConnection
+import com.wlvpn.vpnsdk.domain.value.QuantumResistantMode
+import com.wlvpn.vpnsdk.domain.value.SplitTunnelMode
 import com.wlvpn.vpnsdk.domain.value.VpnProtocol.IKEv2
 import com.wlvpn.vpnsdk.domain.value.VpnProtocol.OpenVpn
 import com.wlvpn.vpnsdk.domain.value.VpnProtocol.WireGuard
@@ -104,7 +106,7 @@ class VpnSdkConnectivityGateway(
                 vpnProtocolSettings = when (protocolSettings) {
                     is ProtocolSettings.IKEv2 -> VpnProtocolSettings.IKEv2(
                         allowLan = protocolSettings.allowLan,
-                        splitTunnelApps = emptyList(),
+                        splitTunnelMode = SplitTunnelMode.Disabled,
                         splitTunnelDomains = emptyList(),
                         dns = if (connectionSettings.isThreatProtectionEnabled) {
                             DnsSettings.Protected
@@ -116,7 +118,7 @@ class VpnSdkConnectivityGateway(
 
                     is ProtocolSettings.OpenVpn -> VpnProtocolSettings.OpenVpn(
                         allowLan = protocolSettings.allowLan,
-                        splitTunnelApps = emptyList(),
+                        splitTunnelMode = SplitTunnelMode.Disabled,
                         splitTunnelDomains = emptyList(),
                         dns = if (connectionSettings.isThreatProtectionEnabled) {
                             DnsSettings.Protected
@@ -141,7 +143,7 @@ class VpnSdkConnectivityGateway(
 
                     is ProtocolSettings.Wireguard -> VpnProtocolSettings.WireGuard(
                         allowLan = protocolSettings.allowLan,
-                        splitTunnelApps = emptyList(),
+                        splitTunnelMode = SplitTunnelMode.Disabled,
                         splitTunnelDomains = emptyList(),
                         dns = if (connectionSettings.isThreatProtectionEnabled) {
                             DnsSettings.Protected
@@ -149,7 +151,8 @@ class VpnSdkConnectivityGateway(
                             DnsSettings.Default
                         },
                         authMode = WireGuardAuthMode.BearerToken,
-                        multihopConnection = MultihopConnection.Disabled
+                        multihopConnection = MultihopConnection.Disabled,
+                        quantumResistantMode = QuantumResistantMode.Disabled
                     )
                 }
             )

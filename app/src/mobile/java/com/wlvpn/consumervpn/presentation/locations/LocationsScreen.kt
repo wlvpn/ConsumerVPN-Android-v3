@@ -7,6 +7,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,7 +78,7 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
     val rowHeight = dimensionResource(id = R.dimen.spacing_xxxxlarge)
     val rowPadding = dimensionResource(id = R.dimen.spacing_xsmall)
 
-    val activity = LocalContext.current as Activity
+    val activity = context as? Activity
     val colorAppBar = LocalColors.current.scheme.background
 
     var requestConnection by remember { mutableStateOf(false) }
@@ -83,7 +87,7 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
     var citySortState by remember { mutableStateOf(false) }
 
     SideEffect {
-        activity.window?.apply {
+        activity?.window?.apply {
             // Set the status bar color
             statusBarColor = colorAppBar.toArgb()
 
@@ -93,11 +97,15 @@ inline fun LocationsScreen(viewModel: LocationsViewModel, crossinline onConnect:
     val locationsEvent = viewModel.locationsEvent.observeAsState()
     val saveLocationEvent by viewModel.saveLocationStateFlow.collectAsState()
 
-    if (saveLocationEvent is LocationsEvent.SelectedLocationSaved){
-        onConnect()
+    if (saveLocationEvent is LocationsEvent.SelectedLocationSaved) {
+        // Fire the navigation once per save event instead of on every recomposition
+        LaunchedEffect(saveLocationEvent) {
+            onConnect()
+        }
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
         topBar = {
             LocationsTopAppBar(onSearchText = {
                 viewModel.searchText(it)
