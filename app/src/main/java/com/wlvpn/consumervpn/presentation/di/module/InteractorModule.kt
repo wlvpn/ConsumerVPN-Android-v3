@@ -38,6 +38,16 @@ import com.wlvpn.consumervpn.application.interactor.settings.SaveProtocolSetting
 import com.wlvpn.consumervpn.application.interactor.settings.SaveProtocolSettingsInteractor
 import com.wlvpn.consumervpn.application.interactor.settings.SaveServerLocationToConnectContract
 import com.wlvpn.consumervpn.application.interactor.settings.SaveServerLocationToConnectInteractor
+import com.wlvpn.consumervpn.application.interactor.settings.diagnostics.ClearDiagnosticsContract
+import com.wlvpn.consumervpn.application.interactor.settings.diagnostics.ClearDiagnosticsInteractor
+import com.wlvpn.consumervpn.application.interactor.settings.diagnostics.RetrieveDiagnosticsPathContract
+import com.wlvpn.consumervpn.application.interactor.settings.diagnostics.RetrieveDiagnosticsPathInteractor
+import com.wlvpn.consumervpn.application.interactor.settings.diagnostics.RetrieveDiagnosticsContract
+import com.wlvpn.consumervpn.application.interactor.settings.diagnostics.RetrieveDiagnosticsInteractor
+import com.wlvpn.consumervpn.domain.gateway.DiagnosticsGateway
+import com.wlvpn.consumervpn.application.interactor.settings.splittunneling.RetrieveInstalledAppsContract
+import com.wlvpn.consumervpn.application.interactor.settings.splittunneling.RetrieveInstalledAppsInteractor
+import com.wlvpn.consumervpn.domain.gateway.SplitTunnelGateway
 import com.wlvpn.consumervpn.domain.gateway.ExternalServersGateway
 import com.wlvpn.consumervpn.domain.gateway.ExternalVpnSettingsGateway
 import com.wlvpn.consumervpn.domain.gateway.GeoLocationGateway
@@ -47,6 +57,7 @@ import com.wlvpn.consumervpn.domain.gateway.VpnConnectivityGateway
 import com.wlvpn.consumervpn.domain.interactor.ConnectToSelectedServerContract
 import com.wlvpn.consumervpn.domain.interactor.ConnectToSelectedServerDomainInteractor
 import com.wlvpn.consumervpn.domain.repository.ConnectionSettingsRepository
+import com.wlvpn.consumervpn.domain.repository.DeviceAndBuildInfoRepository
 import com.wlvpn.consumervpn.domain.repository.ProtocolSettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -219,4 +230,29 @@ object InteractorModule {
         connectionSettingsRepository: ConnectionSettingsRepository
     ): SaveServerLocationToConnectContract.Interactor =
         SaveServerLocationToConnectInteractor(connectionSettingsRepository)
+
+    @Provides
+    fun providesClearDiagnosticsInteractor(
+        diagnosticsGateway: DiagnosticsGateway
+    ): ClearDiagnosticsContract.Interactor =
+        ClearDiagnosticsInteractor(diagnosticsGateway)
+
+    @Provides
+    fun providesRetrieveDiagnosticsPathInteractor(
+        diagnosticsGateway: DiagnosticsGateway
+    ): RetrieveDiagnosticsPathContract.Interactor =
+        RetrieveDiagnosticsPathInteractor(diagnosticsGateway)
+
+    @Provides
+    fun providesRetrieveDiagnosticsInteractor(
+        diagnosticsGateway: DiagnosticsGateway,
+        deviceAndBuildInfoRepository: DeviceAndBuildInfoRepository
+    ): RetrieveDiagnosticsContract.Interactor =
+        RetrieveDiagnosticsInteractor(diagnosticsGateway, deviceAndBuildInfoRepository)
+
+    @Provides
+    fun providesRetrieveInstalledAppsInteractor(
+        deviceAppsGateway: SplitTunnelGateway
+    ): RetrieveInstalledAppsContract.Interactor =
+        RetrieveInstalledAppsInteractor(deviceAppsGateway)
 }

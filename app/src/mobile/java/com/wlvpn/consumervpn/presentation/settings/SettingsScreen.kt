@@ -82,7 +82,9 @@ private const val DEVICE_VPN_SETTINGS = "android.net.vpn.SETTINGS"
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBackPressed: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToSplitTunneling: () -> Unit,
+    onNavigateDiagnostics: () -> Unit
 ) {
     /* To handle on back pressed manually */
     BackHandler(true) {
@@ -247,7 +249,9 @@ fun SettingsScreen(
                         overrideMtuClick = viewModel::onOverrideMtuSelected,
                         threatProtection =
                             screenSettingsEvent.connectionSettings.isThreatProtectionEnabled,
-                        threatProtectionClick = viewModel::onThreatProtectionSelected
+                        threatProtectionClick = viewModel::onThreatProtectionSelected,
+                        splitTunnelingClick = onNavigateToSplitTunneling,
+                        onDiagnosticsClick = onNavigateDiagnostics
                     )
 
                     if (showStartupDialog) {
@@ -592,6 +596,8 @@ fun SettingsContent(
     overrideMtuClick: (Boolean) -> Unit = {},
     threatProtection: Boolean = false,
     threatProtectionClick: (Boolean) -> Unit = {},
+    splitTunnelingClick: () -> Unit = {},
+    onDiagnosticsClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -622,6 +628,13 @@ fun SettingsContent(
             body = string.settings_screen_label_allow_lan_description,
             checked = allowLan,
             onClick = allowLanClick
+        )
+
+        SettingsPreference(
+            icon = R.drawable.ic_split_tunnel,
+            title = string.settings_screen_label_split_tunneling_title,
+            body = stringResource(string.settings_screen_label_split_tunneling_description),
+            onClick = splitTunnelingClick
         )
 
         SwitchSettingsPreference(
@@ -682,6 +695,12 @@ fun SettingsContent(
             icon = R.drawable.ic_contact_24dp,
             title = string.settings_screen_label_support_title,
             onClick = contactClick
+        )
+
+        SettingsPreference(
+            icon = R.drawable.ic_diagnosis,
+            title = string.settings_screen_label_diagnostics_title,
+            onClick = onDiagnosticsClick
         )
 
         SettingsPreference(

@@ -23,7 +23,6 @@
     <string name="notification_channel_id">VpnNotificationChannel</string>
 
     <!--Account configuration strings-->
-    <string name="account_creation_key"></string>
     <string name="account_name" translatable="false">YOUR_ACCOUNT_NAME</string>
     <string name="auth_suffix" translatable="false">YOUR_AUTH_SUFFIX</string>
     <string name="api_key" translatable="false">YOUR_API_KEY</string>

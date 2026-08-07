@@ -29,6 +29,7 @@
 
     <!-- region Base views -->
     <dimen name="vector_ic_size">@dimen/spacing_medium</dimen>
+    <dimen name="vector_ic_size_small">18dp</dimen>
 
     <!-- Text sizes -->
 
