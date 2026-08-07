@@ -7,7 +7,9 @@ import com.wlvpn.consumervpn.data.OpenVpnSettingsProto
 import com.wlvpn.consumervpn.data.WireGuardSettingsProto
 import com.wlvpn.consumervpn.data.repository.DataStoreConnectionSettingsRepository
 import com.wlvpn.consumervpn.data.repository.DataStoreProtocolSettingsRepository
+import com.wlvpn.consumervpn.data.repository.DefaultDeviceAndBuildInfoRepository
 import com.wlvpn.consumervpn.domain.repository.ConnectionSettingsRepository
+import com.wlvpn.consumervpn.domain.repository.DeviceAndBuildInfoRepository
 import com.wlvpn.consumervpn.domain.repository.ProtocolSettingsRepository
 import dagger.Module
 import dagger.Provides
@@ -33,4 +35,8 @@ object RepositoryModule {
             wireGuardSettingsStore,
             ikev2SettingsStore
         )
+
+    @Provides
+    fun providesDeviceAndBuildInfoRepository(): DeviceAndBuildInfoRepository =
+        DefaultDeviceAndBuildInfoRepository()
 }

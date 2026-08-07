@@ -6,4 +6,6 @@ sealed class Routes(val route: String) {
     object Home : Routes("home_screen")
     object Locations : Routes("locations_screen")
     object Settings : Routes("settings_scree")
+    object SplitTunneling : Routes("split_tunneling")
+    object Diagnostics : Routes("settings_diagnostics")
 }

@@ -6,5 +6,6 @@ data class ConnectionSettings(
     var selectedProtocol: Protocol = Protocol.WireGuard,
     var selectedTarget: ConnectionTarget = ConnectionTarget.Fastest,
     var startupConnectOption: StartupConnectOption =  StartupConnectOption.None,
-    val isThreatProtectionEnabled: Boolean = false
+    val isThreatProtectionEnabled: Boolean = false,
+    val splitTunnelSettings: SplitTunnelSettings = SplitTunnelSettings.DisallowedApps(emptyList())
 )

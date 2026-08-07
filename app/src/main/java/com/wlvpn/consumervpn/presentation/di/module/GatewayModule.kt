@@ -1,13 +1,18 @@
 package com.wlvpn.consumervpn.presentation.di.module
 
 import android.app.Application
+import android.content.Context
 import android.net.ConnectivityManager
+import com.wlvpn.consumervpn.data.gateway.LocalDiagnosticsGateway
 import com.wlvpn.consumervpn.data.gateway.NetworkCapabilitiesGateway
+import com.wlvpn.consumervpn.data.gateway.UserAppSplitTunnelGateway
 import com.wlvpn.consumervpn.data.gateway.SdkExternalVpnSettingsGateway
 import com.wlvpn.consumervpn.data.gateway.VpnSdkConnectivityGateway
 import com.wlvpn.consumervpn.data.gateway.VpnSdkGeoLocationGateway
 import com.wlvpn.consumervpn.data.gateway.VpnSdkLoginGateway
 import com.wlvpn.consumervpn.data.gateway.VpnSdkServersGateway
+import com.wlvpn.consumervpn.domain.gateway.DiagnosticsGateway
+import com.wlvpn.consumervpn.domain.gateway.SplitTunnelGateway
 import com.wlvpn.consumervpn.domain.gateway.ExternalServersGateway
 import com.wlvpn.consumervpn.domain.gateway.ExternalVpnSettingsGateway
 import com.wlvpn.consumervpn.domain.gateway.GeoLocationGateway
@@ -19,6 +24,7 @@ import com.wlvpn.vpnsdk.sdk.fetures.vpn.VpnConnection
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.FlowPreview
 
@@ -57,4 +63,16 @@ object GatewayModule {
     fun providesGeotLocationGateway(
         vpnConnection: VpnConnection
     ): GeoLocationGateway = VpnSdkGeoLocationGateway(vpnConnection)
+
+    @Provides
+    fun providesSplitTunnelGateway(
+        @ApplicationContext context: Context
+    ): SplitTunnelGateway = UserAppSplitTunnelGateway(
+        packageManager = context.packageManager
+    )
+
+    @Provides
+    fun providesDiagnosticsGateway(
+        application: Application
+    ): DiagnosticsGateway = LocalDiagnosticsGateway(application)
 }

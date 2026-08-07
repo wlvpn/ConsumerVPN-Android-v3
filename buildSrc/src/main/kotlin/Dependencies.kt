@@ -509,7 +509,7 @@ object Dependencies {
     val vpnSdk = Dependency(
         group = "com.wlvpn.vpnsdk",
         module = "sdkv2",
-        version = "2.8.1.338955"
+        version = "2.8.1.343472"
     )
 
     val desugaringJavaApi = Dependency(

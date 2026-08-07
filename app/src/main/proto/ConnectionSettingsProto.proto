@@ -9,33 +9,33 @@ message ConnectionSettingsProto {
 
   // In proto 3, the default value for an enum is the field
   // with 0 value
-  enum ProtocolProto{
+  enum ProtocolProto {
     WIREGAURD = 0;
     IKEV2 = 1;
     OPENVPN = 2;
   }
 
-enum StartupProto {
+  enum StartupProto {
     NONE = 0;
     FASTEST = 1;
     LAST_SERVER = 2;
-}
+  }
 
-  message CountryTargetProto{
+  message CountryTargetProto {
     string code = 1;
   }
 
-  message CityTargetProto{
+  message CityTargetProto {
     CountryTargetProto country = 1;
     string name = 2;
   }
 
-  message ServerTargetProto{
+  message ServerTargetProto {
     CityTargetProto city = 1;
     string name = 2;
   }
 
-  message FastestTargetProto{
+  message FastestTargetProto {
     // No-op
   }
 
@@ -51,4 +51,5 @@ enum StartupProto {
 
   bool threatProtection = 7;
 
+  repeated string excludedApps = 8;
 }
