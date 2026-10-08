@@ -61,6 +61,7 @@
     <string name="settings_screen_label_protocol_title">Protocol</string>
     <string name="settings_screen_label_port_title">Port</string>
     <string name="settings_screen_label_support_title">Contact Support</string>
+    <string name="settings_screen_label_diagnostics_title">Diagnostics</string>
     <string name="settings_screen_label_terms_of_service">Terms of Service</string>
     <string name="settings_screen_label_privacy_policy">Privacy Policy</string>
     <string name="settings_screen_label_logout_title">Log Out</string>
@@ -76,6 +77,8 @@
     <string name="settings_screen_label_override_mtu_description">Recommended only if there are problems reaching websites under a mobile network.</string>
     <string name="settings_screen_label_threat_protection_description">Block ads, trackers, and malicious websites when the VPN is connected</string>
     <string name="settings_screen_label_open_vpn_settings">Error: Unable to launch. Please open Settings manually.</string>
+    <string name="settings_screen_label_split_tunneling_title">Split Tunneling</string>
+    <string name="settings_screen_label_split_tunneling_description">Choose apps that can connect to the internet without using the VPN tunnel.</string>
 
     <!-- Locations Screen -->
     <string name="locations_screen_label_fastest_available">Fastest Available</string>
@@ -133,6 +136,21 @@
     <string name="settings_screen_vpn_protocol_dialog_title">Choose a VPN Protocol</string>
     <string name="settings_screen_port_dialog_title">Choose a OpenVPN Port</string>
     <string name="settings_screen_internet_protocol_dialog_title">Choose a Internet Protocol</string>
+
+    <!-- Split Tunneling Screen -->
+    <string name="split_tunneling_screen_menu_select_all">Select All</string>
+    <string name="split_tunneling_screen_menu_deselect_all">Deselect All</string>
+    <string name="split_tunneling_screen_system_apps_label">System Apps</string>
+    <string name="split_tunneling_screen_user_apps_label">User Apps</string>
+    <string name="split_tunneling_screen_search_placeholder">Search…</string>
+    <string name="split_tunneling_screen_search_no_results">No results</string>
+    <string name="split_tunneling_screen_error_unable_to_load">Unable to get the installed user apps from device.</string>
+
+    <!-- Diagnostics -->
+    <string name="diagnostics_screen_not_available">No diagnostics available</string>
+    <string name="diagnostics_screen_clear_dialog_text">Are you sure you want to delete your diagnostics file?</string>
+    <string name="diagnostics_screen_clear_dialog_button_delete">Delete</string>
+    <string name="diagnostics_screen_clear_dialog_button_cancel">Cancel</string>
 
     <!-- Accessibility -->
     <string name="accessibility_password_hide">Hide password</string>

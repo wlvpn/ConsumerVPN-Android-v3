@@ -28,6 +28,7 @@ android {
         versionCode = getVersionCode()
         versionName = getVersionName()
         buildConfigField("String", "CLIENT", "\"Android-${versionName}b${versionCode}\"")
+        buildConfigField("String", "VPN_SDK_VERSION", "\"${Dependencies.vpnSdk.version}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

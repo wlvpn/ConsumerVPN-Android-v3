@@ -34,7 +34,16 @@ fun BottomNavigationBar(
             tonalElevation = MaterialTheme.elevation.medium
         ) {
             for (item in items) {
-                val selected = item.route == currentRoute
+
+                // Include the Split Tunneling and Diagnostics screens as part of the Settings tab
+                val selected = when (item.route) {
+                    Routes.Settings.route -> {
+                        currentRoute == Routes.Settings.route
+                                || currentRoute == Routes.SplitTunneling.route
+                                    || currentRoute == Routes.Diagnostics.route
+                    }
+                    else -> item.route == currentRoute
+                }
 
                 NavigationBarItem(
                     colors = NavigationBarItemDefaults.colors(

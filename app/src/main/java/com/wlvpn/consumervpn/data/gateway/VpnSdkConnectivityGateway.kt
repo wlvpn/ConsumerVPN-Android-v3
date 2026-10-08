@@ -24,6 +24,7 @@ import com.wlvpn.consumervpn.domain.value.settings.InternetProtocol
 import com.wlvpn.consumervpn.domain.value.settings.OpenVpnPort
 import com.wlvpn.consumervpn.domain.value.settings.Protocol
 import com.wlvpn.consumervpn.domain.value.settings.ProtocolSettings
+import com.wlvpn.consumervpn.domain.value.settings.SplitTunnelSettings
 import com.wlvpn.consumervpn.util.asFlow
 import com.wlvpn.vpnsdk.domain.value.ConnectionInfo
 import com.wlvpn.vpnsdk.domain.value.ConnectionInfo.CurrentMultihopConnection
@@ -101,12 +102,20 @@ class VpnSdkConnectivityGateway(
                     .map { (it as FindServersResponse.Success).servers.first() }
 
         }.flatMapConcat { location ->
+
+            val splitTunnelMode = when (
+                val settings = connectionSettings.splitTunnelSettings
+            ) {
+                is SplitTunnelSettings.DisallowedApps ->
+                    SplitTunnelMode.DisallowedApps(settings.excludedAppPackages)
+            }
+
             vpnConnection.connectToVpn(
                 locationRequest = LocationRequest.ByLocation(location),
                 vpnProtocolSettings = when (protocolSettings) {
                     is ProtocolSettings.IKEv2 -> VpnProtocolSettings.IKEv2(
                         allowLan = protocolSettings.allowLan,
-                        splitTunnelMode = SplitTunnelMode.Disabled,
+                        splitTunnelMode = splitTunnelMode,
                         splitTunnelDomains = emptyList(),
                         dns = if (connectionSettings.isThreatProtectionEnabled) {
                             DnsSettings.Protected
@@ -118,7 +127,7 @@ class VpnSdkConnectivityGateway(
 
                     is ProtocolSettings.OpenVpn -> VpnProtocolSettings.OpenVpn(
                         allowLan = protocolSettings.allowLan,
-                        splitTunnelMode = SplitTunnelMode.Disabled,
+                        splitTunnelMode = splitTunnelMode,
                         splitTunnelDomains = emptyList(),
                         dns = if (connectionSettings.isThreatProtectionEnabled) {
                             DnsSettings.Protected
@@ -143,7 +152,7 @@ class VpnSdkConnectivityGateway(
 
                     is ProtocolSettings.Wireguard -> VpnProtocolSettings.WireGuard(
                         allowLan = protocolSettings.allowLan,
-                        splitTunnelMode = SplitTunnelMode.Disabled,
+                        splitTunnelMode = splitTunnelMode,
                         splitTunnelDomains = emptyList(),
                         dns = if (connectionSettings.isThreatProtectionEnabled) {
                             DnsSettings.Protected

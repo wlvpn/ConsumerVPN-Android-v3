@@ -1,5 +1,8 @@
 # VPN SDK Changelog
 
+## VPN SDK v2.8.2
+- New dedicated IP functionality [See dedicated IP](DEDICATED_IP.md).
+
 ## VPN SDK v2.8.1
 
 ## Improvements

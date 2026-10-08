@@ -11,6 +11,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.wlvpn.consumervpn.presentation.diagnostics.DiagnosticsScreen
+import com.wlvpn.consumervpn.presentation.diagnostics.DiagnosticsViewModel
 import com.wlvpn.consumervpn.presentation.home.HomeScreen
 import com.wlvpn.consumervpn.presentation.home.HomeViewModel
 import com.wlvpn.consumervpn.presentation.locations.LocationsScreen
@@ -19,6 +21,8 @@ import com.wlvpn.consumervpn.presentation.login.LoginViewModel
 import com.wlvpn.consumervpn.presentation.login.ui.LoginScreen
 import com.wlvpn.consumervpn.presentation.settings.SettingsScreen
 import com.wlvpn.consumervpn.presentation.settings.SettingsViewModel
+import com.wlvpn.consumervpn.presentation.splittunneling.SplitTunnelingScreen
+import com.wlvpn.consumervpn.presentation.splittunneling.SplitTunnelingViewModel
 import com.wlvpn.consumervpn.presentation.util.Routes
 
 @Composable
@@ -88,7 +92,25 @@ fun AppNavigation(
             SettingsScreen(
                 viewModel = viewModel,
                 onBackPressed = { navController.popBackStack() },
-                onNavigateBack = { navController.navigate(Routes.Home.route) }
+                onNavigateBack = { navController.navigate(Routes.Home.route) },
+                onNavigateToSplitTunneling = { navController.navigate(Routes.SplitTunneling.route) },
+                onNavigateDiagnostics = { navController.navigate(Routes.Diagnostics.route) }
+            )
+        }
+
+        composable(route = Routes.Diagnostics.route) {
+            val viewModel: DiagnosticsViewModel = hiltViewModel()
+            DiagnosticsScreen (
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(route = Routes.SplitTunneling.route) {
+            val viewModel: SplitTunnelingViewModel = hiltViewModel()
+            SplitTunnelingScreen (
+                viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

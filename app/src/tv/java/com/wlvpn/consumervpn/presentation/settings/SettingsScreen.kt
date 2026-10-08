@@ -64,6 +64,7 @@ import com.wlvpn.consumervpn.presentation.settings.SettingsEvent.LoadingDataEven
 import com.wlvpn.consumervpn.presentation.settings.SettingsEvent.SettingsReceived
 import com.wlvpn.consumervpn.presentation.settings.SettingsEvent.SuccessLogout
 import com.wlvpn.consumervpn.presentation.settings.SettingsEvent.UnableToLogout
+import com.wlvpn.consumervpn.presentation.splittunneling.SplitTunnelingScreen
 import com.wlvpn.consumervpn.presentation.ui.theme.LocalColors
 import com.wlvpn.consumervpn.presentation.ui.theme.LocalDimens
 import com.wlvpn.consumervpn.presentation.ui.theme.displayNormalFontFamily
@@ -98,6 +99,7 @@ fun SettingsScreen(
     var showTermsOfServiceDialog by remember { mutableStateOf(false) }
     var showPrivacyPolicyDialog by remember { mutableStateOf(false) }
     var showAboutUs by remember { mutableStateOf(false) }
+    var showSplitTunneling by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
 
@@ -110,7 +112,8 @@ fun SettingsScreen(
                     showLogoutDialog ||
                     showTermsOfServiceDialog ||
                     showPrivacyPolicyDialog ||
-                    showAboutUs
+                    showAboutUs ||
+                    showSplitTunneling
         }
     }
 
@@ -209,6 +212,27 @@ fun SettingsScreen(
                         }
                     ) {
                         showConnectAtStartupDialog = true
+                    }
+                }
+
+                item {
+                    SettingsSection(
+                        modifier = itemPaddingModifier,
+                        title = string.settings_screen_label_split_tunneling_title.stringRes
+                    )
+
+                    // Split tunneling
+                    SettingsItem(
+                        iconPainter = painterResource(drawable.ic_split_tunnel),
+                        modifier = Modifier.padding(
+                            start = LocalDimens.current.xSmall,
+                            end = LocalDimens.current.xSmall
+                        ),
+                        title = string.settings_screen_label_split_tunneling_title.stringRes,
+                        description =
+                            string.settings_screen_label_split_tunneling_description.stringRes
+                    ) {
+                        showSplitTunneling = true
                     }
                 }
 
@@ -551,6 +575,12 @@ fun SettingsScreen(
             }
             showAboutUs -> {
                AboutUsScreen(onBackPressed = { showAboutUs = false})
+            }
+
+            showSplitTunneling -> {
+                SplitTunnelingScreen(
+                    onBackPressed = { showSplitTunneling = false }
+                )
             }
 
         }
