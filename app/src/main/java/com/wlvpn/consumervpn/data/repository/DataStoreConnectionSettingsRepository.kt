@@ -16,6 +16,7 @@ import com.wlvpn.consumervpn.domain.repository.ConnectionSettingsRepository
 import com.wlvpn.consumervpn.domain.value.ConnectionTarget
 import com.wlvpn.consumervpn.domain.value.settings.ConnectionSettings
 import com.wlvpn.consumervpn.domain.value.settings.Protocol
+import com.wlvpn.consumervpn.domain.value.settings.SplitTunnelSettings
 import com.wlvpn.consumervpn.domain.value.settings.StartupConnectOption
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -28,41 +29,48 @@ class DataStoreConnectionSettingsRepository(
 
     override fun getConnectionSettings(): Flow<ConnectionSettings> =
         flow {
-           emit(connectionSettingsDataStore.data.first())
+            emit(connectionSettingsDataStore.data.first())
         }.map {
-                ConnectionSettings(
-                    startupConnectOption = when (it.startupConnectOption) {
-                        StartupProto.FASTEST -> StartupConnectOption.FastestServer
-                        StartupProto.NONE -> StartupConnectOption.None
-                        StartupProto.LAST_SERVER -> StartupConnectOption.LastServer
-                        else -> StartupConnectOption.None
-                    },
-                    selectedProtocol = when (it.selectedProtocol) {
-                        ConnectionSettingsProto.ProtocolProto.OPENVPN -> Protocol.OpenVpn
-                        ConnectionSettingsProto.ProtocolProto.IKEV2 -> Protocol.IKEv2
-                        ConnectionSettingsProto.ProtocolProto.WIREGAURD -> Protocol.WireGuard
-                        else -> Protocol.WireGuard
-                    },
-                    selectedTarget = when (it.selectedTargetCase ?: FASTEST) {
-                        COUNTRY -> it.country.toTargetCountry()
-                        CITY -> it.city.toTargetCity()
-                        SERVER -> it.server.toTargetServer()
-                        FASTEST -> it.fastest.toTargetFastest()
-                        SELECTEDTARGET_NOT_SET -> it.fastest.toTargetFastest()
-                    },
-                    isThreatProtectionEnabled = it.threatProtection
-                )
-            }
+            ConnectionSettings(
+                startupConnectOption = when (it.startupConnectOption) {
+                    StartupProto.FASTEST -> StartupConnectOption.FastestServer
+                    StartupProto.NONE -> StartupConnectOption.None
+                    StartupProto.LAST_SERVER -> StartupConnectOption.LastServer
+                    else -> StartupConnectOption.None
+                },
+                selectedProtocol = when (it.selectedProtocol) {
+                    ConnectionSettingsProto.ProtocolProto.OPENVPN -> Protocol.OpenVpn
+                    ConnectionSettingsProto.ProtocolProto.IKEV2 -> Protocol.IKEv2
+                    ConnectionSettingsProto.ProtocolProto.WIREGAURD -> Protocol.WireGuard
+                    else -> Protocol.WireGuard
+                },
+                selectedTarget = when (it.selectedTargetCase ?: FASTEST) {
+                    COUNTRY -> it.country.toTargetCountry()
+                    CITY -> it.city.toTargetCity()
+                    SERVER -> it.server.toTargetServer()
+                    FASTEST -> it.fastest.toTargetFastest()
+                    SELECTEDTARGET_NOT_SET -> it.fastest.toTargetFastest()
+                },
+                isThreatProtectionEnabled = it.threatProtection,
+                splitTunnelSettings = SplitTunnelSettings.DisallowedApps(it.excludedAppsList)
+            )
+        }
 
     override fun saveConnectionSettings(connectionSettings: ConnectionSettings): Flow<Unit> = flow {
         connectionSettingsDataStore.updateData {
+
+            val appsToSave = when (val settings = connectionSettings.splitTunnelSettings) {
+                is SplitTunnelSettings.DisallowedApps -> settings.excludedAppPackages
+            }
+
             it.toBuilder()
                 .setStartupConnectOption(
                     when (connectionSettings.startupConnectOption) {
                         StartupConnectOption.None -> StartupProto.NONE
                         StartupConnectOption.LastServer -> StartupProto.LAST_SERVER
                         StartupConnectOption.FastestServer -> StartupProto.FASTEST
-                })
+                    }
+                )
                 .setSelectedProtocol(
                     when (connectionSettings.selectedProtocol) {
                         Protocol.IKEv2 -> ConnectionSettingsProto.ProtocolProto.IKEV2
@@ -82,6 +90,8 @@ class DataStoreConnectionSettingsRepository(
                     }
                 }
                 .setThreatProtection(connectionSettings.isThreatProtectionEnabled)
+                .clearExcludedApps()
+                .addAllExcludedApps(appsToSave)
                 .build()
         }
         emit(Unit)
@@ -92,7 +102,6 @@ class DataStoreConnectionSettingsRepository(
             it.toBuilder()
                 .clear()
                 .build()
-
         }
         emit(Unit)
     }

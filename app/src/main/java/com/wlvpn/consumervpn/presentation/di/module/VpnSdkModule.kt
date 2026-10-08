@@ -69,7 +69,6 @@ object VpnSdkModule {
                 ),
                 vpnApi = it.vpnApi.copy(
                     host = application.getString(R.string.endpoint_main_api),
-                    mirrors = emptyList(),
                     logInEndpoint = application.getString(R.string.login_api),
                     refreshTokenEndpoint = application.getString(R.string.token_refresh_api),
                     protocolsEndpoint = application.getString(R.string.protocol_list_api),
@@ -77,7 +76,6 @@ object VpnSdkModule {
                 ),
                 wireGuardApi = it.wireGuardApi.copy(
                     host = application.getString(R.string.wireguard_endpoint_main_api),
-                    mirrors = emptyList(),
                     bearerAuthEndpoint = application.getString(R.string.wireguard_bearer_auth_api),
                     credentialsAuthEndpoint =
                     application.getString(R.string.wireguard_credentials_auth_api)

@@ -50,6 +50,18 @@ data class ExtendedDimens(
     val settingsDialogDescriptionSize: TextUnit = 18.sp,
     val settingsDialogRadioTextSize: TextUnit = 14.sp,
 
+    //split tunneling screen
+    val splitTunnelingTitleFontSize: TextUnit = 30.sp,
+    val splitTunnelingItemTitleSize: TextUnit = 14.sp,
+    val splitTunnelingItemDescriptionSize: TextUnit = 12.sp,
+    val splitTunnelingActionLabelSize: TextUnit = 12.sp,
+    val splitTunnelingMessageFontSize: TextUnit = 16.sp,
+    val splitTunnelingAppIconSize: Dp = 40.dp,
+    val splitTunnelingSearchFieldWidth: Dp = 320.dp,
+    val splitTunnelingProgressIndicatorSize: Dp = 48.dp,
+    val splitTunnelingMenuWidth: Dp = 200.dp,
+    val splitTunnelingMenuButtonSize: Dp = 40.dp,
+
     //about us screen
     val aboutUsDialogButtonTitleSize: TextUnit = 10.sp,
     val aboutUsScreenQrCodeImageSize: Dp = 200.dp,

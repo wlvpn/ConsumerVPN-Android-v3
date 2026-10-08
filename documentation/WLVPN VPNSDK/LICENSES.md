@@ -49,11 +49,15 @@
 > - **License**: Apache License, Version 2.0
 > - **Project URL**: https://source.android.com/
 
+## OkHttp Logging Interceptor - 4.12.0
+> - **License**: Apache License 2.0
+> - **Project URL**: https://github.com/square/okhttp
+
 ## mockk - 1.14.4
 > - **License**: Apache License, Version 2.0
 > - **Project URL**: https://github.com/mockk/mockk
 
-## OpenVPN - 2.1.0338542@aar
+## OpenVPN - 2.1.0351319@aar
 > - **License**: GPL v2.0
 > - **Project URL**: https://openvpn.net/
 
@@ -61,9 +65,13 @@
 > - **License**: GPL v2.0
 > - **Project URL**: https://wiki.strongswan.org/projects/strongswan
 
-## Wireguard® - Android - 1.0.20211029.492.338623
+## Wireguard® - Android - 1.0.20211029.492.341698
 > - **License**: GPL v2.0
 > - **Project URL**: https://git.zx2c4.com/wireguard-android/
+
+## OkHttp - 4.12.0
+> - **License**: Apache License 2.0
+> - **Project URL**: https://github.com/square/okhttp
 
 ## Protobuf - 3.18.0
 > - **License**: Copyright 2008 Google Inc
